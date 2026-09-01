@@ -11,16 +11,15 @@ interface QuestNodeProps {
   onClick: () => void;
 }
 
-// Landmark sequence for quest illustrations
 const landmarks = [
-  { Component: Island, size: 120 },
-  { Component: MountainRange, size: 140 },
-  { Component: PalmTree, size: 80 },
-  { Component: SailingShip, size: 130 },
-  { Component: Castle, size: 90 },
-  { Component: SeaMonster, size: 120 },
-  { Component: Cactus, size: 70 },
-  { Component: Anchor, size: 70 },
+  { Component: Island, size: 100 },
+  { Component: MountainRange, size: 120 },
+  { Component: PalmTree, size: 70 },
+  { Component: SailingShip, size: 110 },
+  { Component: Castle, size: 80 },
+  { Component: SeaMonster, size: 100 },
+  { Component: Cactus, size: 60 },
+  { Component: Anchor, size: 60 },
 ];
 
 export function QuestNode({ quest, status, index, onClick }: QuestNodeProps) {
@@ -33,14 +32,13 @@ export function QuestNode({ quest, status, index, onClick }: QuestNodeProps) {
   const isCheckpoint = quest.type === 'checkpoint' || quest.type === 'final_review';
   const isProject = quest.type === 'project';
 
-  // Pick illustration
   let Illustration, illSize;
   if (isCheckpoint || quest.type === 'final_review') {
     Illustration = CompassRoseFull;
-    illSize = 110;
+    illSize = 95;
   } else if (isProject) {
     Illustration = Treasure;
-    illSize = 120;
+    illSize = 100;
   } else {
     const lm = landmarks[index % landmarks.length];
     Illustration = lm.Component;
@@ -56,39 +54,34 @@ export function QuestNode({ quest, status, index, onClick }: QuestNodeProps) {
     }
   };
 
-  // Status class
-  const statusClass = `quest-pin--${status}`;
-
-  // Pin inner icon
   const renderPinContent = () => {
     if (status === 'completed') {
       return (
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
           <polyline points="20 6 9 17 4 12" />
         </svg>
       );
     }
     if (status === 'in_progress') {
-      return <div className="w-3 h-3 rounded-full bg-current" />;
+      return <div className="w-2.5 h-2.5 rounded-full bg-current" />;
     }
     if (status === 'unlocked') {
       if (isCheckpoint || quest.type === 'final_review') {
         return (
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" opacity="0.7">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" opacity="0.7">
             <polygon points="12,2 15,9 22,9 16,14 18,21 12,17 6,21 8,14 2,9 9,9" />
           </svg>
         );
       }
       return (
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
           <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
           <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
         </svg>
       );
     }
-    // Locked
     return (
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" opacity="0.5">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" opacity="0.5">
         <rect x="3" y="11" width="18" height="11" rx="2" />
         <path d="M7 11V7a5 5 0 0 1 10 0v4" />
       </svg>
@@ -97,34 +90,35 @@ export function QuestNode({ quest, status, index, onClick }: QuestNodeProps) {
 
   return (
     <motion.div
-      className={`quest-pin ${statusClass}`}
+      className={`quest-pin quest-pin--${status}`}
       data-quest-id={quest.id}
       onClick={handleClick}
-      whileHover={!isDisabled ? { scale: 1.05, y: -6 } : {}}
-      whileTap={!isDisabled ? { scale: 0.98 } : {}}
+      whileHover={!isDisabled ? { scale: 1.06, y: -8 } : {}}
+      whileTap={!isDisabled ? { scale: 0.97 } : {}}
     >
-      {/* Illustration above the pin */}
-      <motion.div
-        className="mb-1 relative"
-        style={{
-          filter: isDisabled ? 'grayscale(0.7) sepia(0.3)' : 'sepia(0.08) saturate(0.9)',
-          opacity: isDisabled ? 0.35 : 0.85,
-        }}
-        animate={status === 'in_progress' ? {
-          y: [0, -6, 0],
-        } : status === 'unlocked' ? {
-          y: [0, -3, 0],
-        } : {}}
-        transition={{
-          duration: status === 'in_progress' ? 2.5 : 4,
-          repeat: Infinity,
-          ease: 'easeInOut',
-        }}
-      >
-        <Illustration size={illSize} />
-      </motion.div>
+      {/* Island base with illustration */}
+      <div className="quest-pin__island">
+        <motion.div
+          style={{
+            filter: isDisabled ? 'grayscale(0.7) brightness(0.6)' : 'saturate(0.9)',
+            opacity: isDisabled ? 0.35 : 0.9,
+          }}
+          animate={status === 'in_progress' ? {
+            y: [0, -5, 0],
+          } : status === 'unlocked' ? {
+            y: [0, -2, 0],
+          } : {}}
+          transition={{
+            duration: status === 'in_progress' ? 2.5 : 4,
+            repeat: Infinity,
+            ease: 'easeInOut',
+          }}
+        >
+          <Illustration size={illSize} />
+        </motion.div>
+      </div>
 
-      {/* The map pin */}
+      {/* Map pin marker */}
       <div className="quest-pin__marker">
         {renderPinContent()}
       </div>
