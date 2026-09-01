@@ -1,56 +1,87 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../lib/auth';
-import { LanguageSwitcher } from './LanguageSwitcher';
-import { CompassRose } from '../components/AdventureIcons';
 
 export function Header() {
   const { user, profile, signOut } = useAuth();
-  const navigate = useNavigate();
-
-  const handleSignOut = async () => {
-    await signOut();
-    navigate('/login');
-  };
 
   return (
-    <header className="voyage-header sticky top-0 z-40">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-4">
-        <Link to="/" className="group flex items-center gap-3">
-          <span className="voyage-header__mark">
-            <CompassRose size={28} />
-          </span>
-          <div>
-            <span className="font-display text-lg font-bold tracking-wide text-[var(--color-parchment-light)]">ODYSSEY</span>
-            <span className="voyage-header__sub hidden sm:block">Your Journey Into AI</span>
-          </div>
-        </Link>
+    <header style={{
+      background: 'linear-gradient(180deg, #1A0F08, #2C1810)',
+      borderBottom: '2px solid rgba(180,140,100,0.3)',
+      padding: '8px 16px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      position: 'sticky',
+      top: 0,
+      zIndex: 40,
+    }}>
+      <Link to="/" style={{
+        fontFamily: 'var(--font-display)',
+        fontWeight: 800,
+        fontSize: 16,
+        color: '#FFF6DD',
+        textDecoration: 'none',
+        display: 'flex',
+        alignItems: 'center',
+        gap: 6,
+      }}>
+        🧭 <span>ODYSSEY</span>
+      </Link>
 
-        <div className="flex items-center gap-3">
-          <LanguageSwitcher />
-
-          {user && profile ? (
-            <>
-              <span className="voyage-header__stat px-3 py-1 rounded-sm text-[11px] font-handwritten tracking-wider">
-                {profile.xp} XP
-              </span>
-              {profile.streak_count > 0 && (
-                <span className="voyage-header__stat voyage-header__stat--streak px-3 py-1 rounded-sm text-[11px] font-handwritten tracking-wider">
-                  {profile.streak_count} 🔥
-                </span>
-              )}
-              <button onClick={() => navigate('/profile')} className="voyage-header__link hidden sm:block">
-                {profile.username}
-              </button>
-              <button onClick={handleSignOut} className="voyage-header__link">
-                Keluar
-              </button>
-            </>
-          ) : (
-            <Link to="/login" className="voyage-header__login text-[11px] px-4 py-1.5 rounded-sm">
-              Masuk
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        {user && profile ? (
+          <>
+            <span style={{
+              background: 'rgba(218,165,32,0.1)',
+              border: '1px solid rgba(218,165,32,0.3)',
+              borderRadius: 12,
+              padding: '2px 10px',
+              fontSize: 11,
+              fontWeight: 700,
+              color: '#E3B23C',
+              fontFamily: 'var(--font-display)',
+            }}>
+              ⭐ {profile.xp} XP
+            </span>
+            <Link to="/profile" style={{
+              color: 'rgba(255,246,221,0.64)',
+              fontSize: 11,
+              fontFamily: 'var(--font-display)',
+              fontWeight: 700,
+              textDecoration: 'none',
+              letterSpacing: 0.5,
+            }}>
+              {profile.username}
             </Link>
-          )}
-        </div>
+            <button onClick={signOut} style={{
+              background: 'none',
+              border: 'none',
+              color: 'rgba(255,246,221,0.5)',
+              fontSize: 11,
+              fontFamily: 'var(--font-display)',
+              fontWeight: 700,
+              cursor: 'pointer',
+              letterSpacing: 0.5,
+            }}>
+              Keluar
+            </button>
+          </>
+        ) : (
+          <Link to="/login" style={{
+            background: '#E3B23C',
+            color: '#3A2A18',
+            border: 'none',
+            borderRadius: 10,
+            padding: '5px 14px',
+            fontSize: 11,
+            fontWeight: 700,
+            fontFamily: 'var(--font-display)',
+            textDecoration: 'none',
+          }}>
+            Masuk
+          </Link>
+        )}
       </div>
     </header>
   );

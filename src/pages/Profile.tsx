@@ -5,266 +5,110 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../lib/auth';
 import { supabase } from '../lib/supabase';
 import { courseData } from '../data/courseData';
-import { CompassRoseFull } from '../components/MapIllustrations';
 
-interface Badge {
-  level_id: string;
-  earned_at: string;
-}
+interface Badge { level_id: string; earned_at: string; }
 
 export function Profile() {
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
   const lang = i18n.language === 'en' ? 'en' : 'id';
-  const { user, profile, refreshProfile, signOut } = useAuth();
+  const { user, profile, signOut } = useAuth();
   const navigate = useNavigate();
-
   const [badges, setBadges] = useState<Badge[]>([]);
-  const [editUsername, setEditUsername] = useState(false);
-  const [newUsername, setNewUsername] = useState('');
-  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (!user) return;
-
-    async function fetchBadges() {
-      const { data } = await supabase
-        .from('user_badges')
-        .select('*')
-        .eq('user_id', user!.id);
+    supabase.from('user_badges').select('*').eq('user_id', user.id).then(({ data }) => {
       if (data) setBadges(data);
-    }
-
-    fetchBadges();
+    });
   }, [user]);
 
-  const handleSaveUsername = async () => {
-    if (!newUsername.trim() || newUsername.length < 3) return;
-    setSaving(true);
-
-    const { error } = await supabase
-      .from('profiles')
-      .update({ username: newUsername.trim() })
-      .eq('id', user!.id);
-
-    if (!error) {
-      setEditUsername(false);
-      await refreshProfile();
-    }
-    setSaving(false);
-  };
-
-  const handleLanguageChange = async (lang: 'id' | 'en') => {
-    i18n.changeLanguage(lang);
-    localStorage.setItem('odyssey-lang', lang);
-
-    if (user) {
-      await supabase
-        .from('profiles')
-        .update({ preferred_lang: lang })
-        .eq('id', user.id);
-    }
-  };
-
-  const handleSignOut = async () => {
-    await signOut();
-    navigate('/login');
-  };
+  const handleSignOut = async () => { await signOut(); navigate('/login'); };
 
   if (!profile) return null;
 
   return (
-    <div className="min-h-screen pb-20">
-      <div className="max-w-2xl mx-auto px-4 py-10">
-        {/* Profile card */}
-        <motion.div
-          className="map-card overflow-hidden mb-6"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-        >
+    <div className="min-h-screen pb-20" style={{ background: 'linear-gradient(160deg, #2b2015, #1a130c)' }}>
+      <div className="max-w-lg mx-auto px-4 py-10">
+        <motion.div className="overflow-hidden mb-6" style={{ background: 'var(--sand)', border: '2px solid var(--wood-dark)', borderRadius: 16 }}
+          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
           {/* Banner */}
-          <div className="h-24 relative overflow-hidden bg-[var(--color-ocean)]">
-            <div className="absolute inset-0 opacity-30" style={{ backgroundImage: 'linear-gradient(30deg, transparent 48%, rgba(244,232,193,.45) 49%, transparent 50%), linear-gradient(150deg, transparent 48%, rgba(244,232,193,.3) 49%, transparent 50%)', backgroundSize: '42px 42px' }} />
-            <div className="absolute right-6 top-2 opacity-40"><CompassRoseFull size={86} /></div>
-            <span className="absolute left-6 top-5 ribbon-label">Captain&apos;s log</span>
+          <div className="h-24 relative overflow-hidden" style={{ background: 'var(--ocean)' }}>
+            <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.05) 10px, rgba(255,255,255,0.05) 20px)' }} />
+            <div className="absolute right-5 top-3 text-4xl opacity-30">🧭</div>
           </div>
 
-          {/* Avatar & info */}
-          <div className="px-6 pb-6 -mt-10">
+          {/* Avatar */}
+          <div className="px-6 pb-6 -mt-8">
             <div className="flex items-end gap-4 mb-4">
-              <div className="w-20 h-20 rounded-full bg-[var(--color-sepia)] border-4 border-[var(--color-parchment-light)] flex items-center justify-center text-3xl font-bold font-display text-[var(--color-parchment-light)] shadow-md">
+              <div className="w-18 h-18 rounded-full flex items-center justify-center text-3xl font-bold font-display shadow-lg"
+                style={{ width: 72, height: 72, background: 'var(--wood)', border: '4px solid var(--sand)', color: 'var(--cream)' }}>
                 {profile.username?.[0]?.toUpperCase() ?? '?'}
               </div>
               <div className="pb-1">
-                {editUsername ? (
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="text"
-                      value={newUsername}
-                      onChange={(e) => setNewUsername(e.target.value)}
-                        className="input-field text-sm py-1"
-                      placeholder="Username"
-                      autoFocus
-                    />
-                    <button
-                      onClick={handleSaveUsername}
-                      disabled={saving}
-                      className="btn-adventure text-xs py-1 px-3"
-                    >
-                      {saving ? '...' : 'Save'}
-                    </button>
-                    <button
-                      onClick={() => setEditUsername(false)}
-                      className="btn-parchment text-xs py-1 px-3"
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                ) : (
-                  <button
-                    onClick={() => {
-                      setNewUsername(profile.username ?? '');
-                      setEditUsername(true);
-                    }}
-                    className="text-xl font-bold font-display hover:text-[var(--color-ocean)] transition-colors"
-                  >
-                    {profile.username ?? 'No username'}
-                    <span className="text-xs text-[var(--color-bark)] ml-2">edit</span>
-                  </button>
-                )}
+                <h2 className="text-xl font-bold font-display" style={{ color: 'var(--ink)' }}>{profile.username}</h2>
+                <p className="text-xs" style={{ color: 'var(--ink-soft)' }}>{user?.email}</p>
               </div>
             </div>
 
-            <p className="text-xs text-[var(--color-ink-muted)] font-body">{user?.email}</p>
-          </div>
-        </motion.div>
-
-        {/* Stats grid */}
-        <motion.div
-          className="grid grid-cols-3 gap-3 mb-6"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-        >
-          <div className="card p-4 text-center">
-            <div className="font-mono text-xl font-bold text-[var(--color-amber)]">
-              {profile.xp.toLocaleString()}
-            </div>
-            <div className="text-[10px] font-mono uppercase text-[var(--color-bark)]">
-              {t('xp')}
-            </div>
-          </div>
-
-          <div className="card p-4 text-center">
-            <div className="font-mono text-xl font-bold text-[var(--color-terracotta)]">
-              {profile.streak_count}
-            </div>
-            <div className="text-[10px] font-mono uppercase text-[var(--color-bark)]">
-              {t('streak')}
-            </div>
-          </div>
-
-          <div className="card p-4 text-center">
-            <div className="font-mono text-xl font-bold text-[var(--color-emerald)]">
-              {badges.length}
-            </div>
-            <div className="text-[10px] font-mono uppercase text-[var(--color-bark)]">
-              {t('badges')}
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Badge collection */}
-        <motion.div
-          className="card p-6 mb-6"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-        >
-          <h2 className="font-display text-lg text-[var(--color-ink)] mb-4">
-            {t('badges')}
-          </h2>
-
-          <div className="space-y-3">
-            {courseData.map((level) => {
-              const earned = badges.find((b) => b.level_id === level.id);
-              return (
-                <div
-                  key={level.id}
-                  className={`flex items-center gap-4 p-3 rounded-xl border transition-colors ${
-                    earned
-                      ? 'bg-[var(--color-emerald-bg)] border-[var(--color-emerald)]/20'
-                    : 'bg-[var(--color-parchment)] border-[var(--color-sand)] opacity-50'
-                  }`}
-                >
-                  <div className="text-3xl">{level.badge_icon}</div>
-                  <div className="flex-1">
-                    <div className="font-semibold text-sm">
-                      {lang === 'en' ? level.badge_name_en : level.badge_name_id}
-                    </div>
-                    <div className="text-[10px] font-mono text-odyssey-muted">
-                      {earned
-                        ? `${lang === 'en' ? 'Earned' : 'Diraih'} ${new Date(earned.earned_at).toLocaleDateString()}`
-                        : lang === 'en' ? 'Not yet earned' : 'Belum diraih'}
-                    </div>
-                  </div>
-                  <div className="text-xl">{level.emoji}</div>
+            {/* Stats */}
+            <div className="grid grid-cols-3 gap-3 mb-6">
+              {[
+                { label: 'XP', value: profile.xp.toLocaleString(), color: 'var(--gold)' },
+                { label: 'Streak', value: String(profile.streak_count), color: 'var(--flag)' },
+                { label: 'Badge', value: String(badges.length), color: 'var(--island-green)' },
+              ].map(s => (
+                <div key={s.label} className="text-center p-3 rounded-xl" style={{ background: 'rgba(255,255,255,0.6)', border: '1px solid var(--sand-dark)' }}>
+                  <div className="font-display font-extrabold text-xl" style={{ color: s.color }}>{s.value}</div>
+                  <div className="text-[10px] font-bold uppercase" style={{ color: 'var(--ink-soft)' }}>{s.label}</div>
                 </div>
-              );
-            })}
-          </div>
-        </motion.div>
+              ))}
+            </div>
 
-        {/* Language preference */}
-        <motion.div
-          className="card p-6 mb-6"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-        >
-          <h2 className="font-display text-lg text-[var(--color-ink)] mb-4">
-            {t('select_language')}
-          </h2>
+            {/* Badges */}
+            <h3 className="font-display font-bold text-base mb-3" style={{ color: 'var(--ink)' }}>Badge</h3>
+            <div className="space-y-2 mb-6">
+              {courseData.map(level => {
+                const earned = badges.find(b => b.level_id === level.id);
+                return (
+                  <div key={level.id} className="flex items-center gap-3 p-3 rounded-xl" style={{
+                    background: earned ? 'rgba(61,107,63,0.08)' : 'rgba(255,255,255,0.4)',
+                    border: `1px solid ${earned ? 'rgba(61,107,63,0.2)' : 'var(--sand-dark)'}`,
+                    opacity: earned ? 1 : 0.5,
+                  }}>
+                    <span className="text-2xl">{level.badge_icon}</span>
+                    <div className="flex-1">
+                      <div className="font-bold text-sm" style={{ color: 'var(--ink)' }}>
+                        {lang === 'en' ? level.badge_name_en : level.badge_name_id}
+                      </div>
+                      <div className="text-[10px]" style={{ color: 'var(--ink-soft)' }}>
+                        {earned ? `Diraih ${new Date(earned.earned_at).toLocaleDateString()}` : 'Belum diraih'}
+                      </div>
+                    </div>
+                    <span className="text-lg">{level.emoji}</span>
+                  </div>
+                );
+              })}
+            </div>
 
-          <div className="flex gap-3">
-            <button
-              onClick={() => handleLanguageChange('id')}
-              className={`flex-1 p-4 rounded-xl border-2 transition-all text-center ${
-                i18n.language === 'id'
-                  ? 'border-[var(--color-emerald)] bg-[var(--color-emerald-bg)] text-[var(--color-emerald)]'
-                  : 'border-[var(--color-sand)] bg-[var(--color-parchment-light)] text-[var(--color-bark)] hover:border-[var(--color-stone)]'
-              }`}
-            >
-              <div className="text-2xl mb-1">🇮🇩</div>
-              <div className="font-semibold text-sm">{t('indonesian')}</div>
+            {/* Language */}
+            <h3 className="font-display font-bold text-base mb-3" style={{ color: 'var(--ink)' }}>Bahasa</h3>
+            <div className="flex gap-3 mb-6">
+              {(['id', 'en'] as const).map(l => (
+                <button key={l} onClick={() => { i18n.changeLanguage(l); localStorage.setItem('odyssey-lang', l); }}
+                  className="flex-1 p-3 rounded-xl text-center font-bold text-sm transition-all" style={{
+                    background: i18n.language === l ? 'rgba(61,107,63,0.1)' : 'rgba(255,255,255,0.5)',
+                    border: `2px solid ${i18n.language === l ? 'var(--island-green)' : 'var(--sand-dark)'}`,
+                    color: i18n.language === l ? 'var(--island-green)' : 'var(--ink-soft)',
+                  }}>
+                  {l === 'id' ? '🇮🇩 Indonesia' : '🇬🇧 English'}
+                </button>
+              ))}
+            </div>
+
+            <button onClick={handleSignOut} className="btn btn--ghost w-full" style={{ color: 'var(--flag)' }}>
+              Keluar
             </button>
-
-            <button
-              onClick={() => handleLanguageChange('en')}
-              className={`flex-1 p-4 rounded-xl border-2 transition-all text-center ${
-                i18n.language === 'en'
-                  ? 'border-[var(--color-emerald)] bg-[var(--color-emerald-bg)] text-[var(--color-emerald)]'
-                  : 'border-[var(--color-sand)] bg-[var(--color-parchment-light)] text-[var(--color-bark)] hover:border-[var(--color-stone)]'
-              }`}
-            >
-              <div className="text-2xl mb-1">🇬🇧</div>
-              <div className="font-semibold text-sm">{t('english')}</div>
-            </button>
           </div>
-        </motion.div>
-
-        {/* Account actions */}
-        <motion.div
-          className="space-y-3"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-        >
-          <button
-            onClick={handleSignOut}
-            className="btn-parchment w-full text-[var(--color-terracotta)] hover:bg-[var(--color-terracotta-bg)] hover:border-[var(--color-terracotta)]/20"
-          >
-            {lang === 'en' ? 'Sign Out' : 'Keluar'}
-          </button>
         </motion.div>
       </div>
     </div>
