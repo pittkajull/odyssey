@@ -207,25 +207,17 @@ a { color: inherit; }
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  background:
-    /* Compass grid */
-    repeating-linear-gradient(0deg, transparent, transparent 80px, rgba(112,66,20,.02) 80px, rgba(112,66,20,.02) 81px),
-    repeating-linear-gradient(90deg, transparent, transparent 80px, rgba(112,66,20,.02) 80px, rgba(112,66,20,.02) 81px),
-    /* Parchment */
-    linear-gradient(135deg, rgba(232,217,180,.95), rgba(204,186,140,.8));
-  border: 2px solid rgba(112,66,20,.25);
-  border-radius: 3px;
-  box-shadow:
-    0 12px 40px rgba(0,0,0,.25),
-    inset 0 0 80px rgba(112,66,20,.08),
-    3px 3px 0 rgba(160,140,100,.4);
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
 }
 
 .map-surface::before {
   content: '';
   position: absolute;
   inset: 12px;
-  border: 1px dashed rgba(112,66,20,.15);
+  border: 1px dashed rgba(255,255,255,.06);
   pointer-events: none;
   z-index: 1;
 }
@@ -235,8 +227,7 @@ a { color: inherit; }
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background:
-    radial-gradient(ellipse at center, transparent 45%, rgba(80,45,20,.1));
+  background: none;
   z-index: 1;
 }
 
@@ -247,7 +238,7 @@ a { color: inherit; }
   gap: 1rem;
   padding: 0 0 1rem;
   margin-bottom: 1.5rem;
-  border-bottom: 2px solid rgba(112,66,20,.2);
+  border-bottom: 2px solid rgba(255,255,255,.08);
 }
 
 .map-legend {
@@ -389,13 +380,13 @@ a { color: inherit; }
   right: 0;
   top: 50%;
   height: 2px;
-  background: repeating-linear-gradient(90deg, rgba(112,66,20,.18) 0px, rgba(112,66,20,.18) 8px, transparent 8px, transparent 12px);
+  background: repeating-linear-gradient(90deg, rgba(255,255,255,.1) 0px, rgba(255,255,255,.1) 8px, transparent 8px, transparent 12px);
 }
 .level-heading__number {
   font: 10px var(--font-handwritten);
   letter-spacing: .08em;
-  color: var(--color-stamp-red);
-  border-right: 2px solid rgba(112,66,20,.18);
+  color: var(--color-gold-bright);
+  border-right: 2px solid rgba(255,255,255,.1);
   padding-right: .7rem;
 }
 .module-region { position: relative; }
@@ -405,7 +396,7 @@ a { color: inherit; }
   gap: .6rem;
   justify-content: center;
   margin-bottom: .4rem;
-  color: var(--color-ink-muted);
+  color: rgba(184,224,240,.5);
   font: 10px var(--font-handwritten);
   letter-spacing: .16em;
   text-transform: uppercase;
@@ -413,7 +404,7 @@ a { color: inherit; }
 .module-region__line {
   width: 34px;
   height: 1px;
-  background: rgba(112,66,20,.28);
+  background: rgba(255,255,255,.12);
 }
 
 /* =============================================

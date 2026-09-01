@@ -249,10 +249,10 @@ export function PathMap() {
         <div className="map-surface paper-texture rounded-sm p-4 sm:p-10">
           <div className="map-surface__header">
             <div>
-              <span className="font-handwritten text-[10px] uppercase tracking-[.18em] text-[var(--color-stamp-red)]">Route map / 001</span>
-              <p className="font-display italic text-lg mt-1">{lang === 'en' ? 'The waters of artificial intelligence' : 'Perairan kecerdasan artifisial'}</p>
+              <span className="font-handwritten text-[10px] uppercase tracking-[.18em]" style={{ color: 'var(--color-gold-bright)' }}>Route map / 001</span>
+              <p className="font-display italic text-lg mt-1" style={{ color: 'var(--color-ocean-foam)' }}>{lang === 'en' ? 'The waters of artificial intelligence' : 'Perairan kecerdasan artifisial'}</p>
             </div>
-            <div className="map-legend hidden sm:flex">
+            <div className="map-legend hidden sm:flex" style={{ color: 'rgba(184,224,240,.5)' }}>
               <span><i className="legend-dot legend-dot--done" /> {lang === 'en' ? 'Charted' : 'Selesai'}</span>
               <span><i className="legend-dot legend-dot--current" /> {lang === 'en' ? 'Current' : 'Posisi kini'}</span>
               <span><i className="legend-dot legend-dot--locked" /> {lang === 'en' ? 'Uncharted' : 'Belum terbuka'}</span>
@@ -263,14 +263,14 @@ export function PathMap() {
             <motion.section key={level.id} className="level-region" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: li * 0.15 }}>
               <div className="level-heading relative mb-7 sm:mb-9">
                 <div className="level-heading__rule" />
-                <div className="relative inline-flex items-center gap-3 bg-[var(--color-parchment)] px-4 py-2.5" style={{ boxShadow: '0 2px 8px rgba(0,0,0,.15)' }}>
+                <div className="relative inline-flex items-center gap-3 px-4 py-2.5" style={{ background: 'rgba(12,35,64,.7)', border: '1px solid rgba(255,255,255,.1)', backdropFilter: 'blur(8px)' }}>
                   <span className="level-heading__number">{String(li + 1).padStart(2, '0')}</span>
                   <span className="text-xl">{level.emoji}</span>
                   <div>
                     <h2 className="font-display text-xl sm:text-2xl text-[var(--color-ink)] italic leading-tight">{lang === 'en' ? level.title_en : level.title_id}</h2>
                     <p className="text-[11px] text-[var(--color-ink-muted)] font-body mt-0.5">{lang === 'en' ? level.theme_en : level.theme_id}</p>
                   </div>
-                  <span className="stamp stamp-gold text-[9px] ml-2 hidden sm:inline-flex">{lang === 'en' ? level.badge_name_en : level.badge_name_id}</span>
+                  <span className="stamp text-[9px] ml-2 hidden sm:inline-flex" style={{ color: 'var(--color-gold-bright)', borderColor: 'var(--color-gold)' }}>{lang === 'en' ? level.badge_name_en : level.badge_name_id}</span>
                 </div>
               </div>
 
