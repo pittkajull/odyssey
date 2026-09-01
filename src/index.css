@@ -3,9 +3,9 @@
 @import "tailwindcss";
 
 @theme {
-  --color-parchment: #F4E8C1;
-  --color-parchment-light: #FAF3E0;
-  --color-parchment-dark: #E8D5A3;
+  --color-parchment: #D4C49A;
+  --color-parchment-light: #E8D9B4;
+  --color-parchment-dark: #B8A676;
   --color-ink: #2C1810;
   --color-ink-light: #5C3D2E;
   --color-ink-muted: #8B7355;
@@ -21,7 +21,6 @@
   --color-gold-light: #DAA520;
   --color-compass: #8B4513;
 
-  /* Legacy aliases kept for the profile and quiz surfaces. */
   --color-sand: #D8BE8A;
   --color-stone: #9B896E;
   --color-bark: #5C3D2E;
@@ -32,10 +31,10 @@
   --color-terracotta: #A2472D;
   --color-terracotta-bg: #F4E0D8;
 
-  --color-odyssey-bg: #F4E8C1;
-  --color-odyssey-panel: #FAF3E0;
-  --color-odyssey-panel-light: #FFF9EA;
-  --color-odyssey-border: #C9B38A;
+  --color-odyssey-bg: #D4C49A;
+  --color-odyssey-panel: #E8D9B4;
+  --color-odyssey-panel-light: #F0E4C8;
+  --color-odyssey-border: #B8A676;
   --color-odyssey-text: #2C1810;
   --color-odyssey-muted: #8B7355;
   --color-odyssey-accent: #2E6B6B;
@@ -48,7 +47,7 @@
 }
 
 /* =============================================
-   GLOBAL
+   GLOBAL — aged parchment base
    ============================================= */
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
@@ -60,134 +59,231 @@ body {
   color: var(--color-ink);
   -webkit-font-smoothing: antialiased;
   line-height: 1.6;
-  /* Parchment background with paper grain */
+  /* Real aged parchment — multiple layers of stain and grain */
   background:
-    radial-gradient(circle at 15% 8%, rgba(255,255,255,.42), transparent 24rem),
-    radial-gradient(circle at 88% 72%, rgba(46,107,107,.07), transparent 26rem),
-    repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 2px,
-      rgba(139, 115, 85, 0.02) 2px,
-      rgba(139, 115, 85, 0.02) 4px
-    ),
-    linear-gradient(135deg, var(--color-parchment-light) 0%, var(--color-parchment) 50%, var(--color-parchment-dark) 100%);
+    /* Coffee ring stain top-right */
+    radial-gradient(ellipse 200px 180px at 85% 15%, rgba(139,90,43,.08), transparent),
+    /* Water damage bottom-left */
+    radial-gradient(ellipse 300px 250px at 10% 85%, rgba(160,114,74,.1), transparent),
+    /* Age spots scattered */
+    radial-gradient(circle 120px at 70% 50%, rgba(180,140,80,.06), transparent),
+    radial-gradient(circle 90px at 25% 35%, rgba(160,114,74,.05), transparent),
+    /* Main parchment gradient with warm tones */
+    linear-gradient(145deg,
+      #D8C89A 0%,
+      #D4C49A 15%,
+      #CCBA8C 30%,
+      #D4C49A 50%,
+      #C8B88A 65%,
+      #D0C090 80%,
+      #CCBA8C 100%
+    );
   background-attachment: fixed;
 }
 
 button, a, input { font: inherit; }
 a { color: inherit; }
 
+/* =============================================
+   PAPER TEXTURE OVERLAY — grain, wrinkles, stains
+   ============================================= */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  /* Fractal noise for paper grain */
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='5' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  mix-blend-mode: multiply;
+  opacity: 0.12;
+}
+
+/* Secondary texture — fine grain */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9998;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='turbulence' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.15'/%3E%3C/svg%3E");
+  mix-blend-mode: overlay;
+  opacity: 0.06;
+}
+
+/* =============================================
+   VOYAGE MAP — the main parchment sheet
+   ============================================= */
+.voyage-page {
+  position: relative;
+  /* Aged parchment with darker edges */
+  background:
+    /* Dark burnt edges — vignette */
+    radial-gradient(ellipse at center, transparent 50%, rgba(80,45,20,.18) 100%),
+    /* Top edge burn */
+    linear-gradient(to bottom, rgba(100,55,25,.15) 0%, transparent 8%),
+    /* Bottom edge burn */
+    linear-gradient(to top, rgba(100,55,25,.12) 0%, transparent 6%),
+    /* Left edge burn */
+    linear-gradient(to right, rgba(100,55,25,.1) 0%, transparent 5%),
+    /* Right edge burn */
+    linear-gradient(to left, rgba(100,55,25,.1) 0%, transparent 5%),
+    /* Base parchment */
+    linear-gradient(145deg, #D8C89A, #CCBA8C, #D4C49A);
+}
+
+/* Torn/rough edge effect — top */
+.voyage-page::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 12px;
+  z-index: 100;
+  pointer-events: none;
+  background:
+    linear-gradient(to bottom, rgba(80,45,20,.25) 0%, transparent 100%);
+  mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 1200 12' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0 Q30 8 60 3 Q90 -2 120 5 Q150 10 180 2 Q210 -3 240 6 Q270 11 300 4 Q330 -1 360 7 Q390 12 420 3 Q450 -2 480 8 Q510 13 540 5 Q570 -1 600 6 Q630 11 660 3 Q690 -2 720 7 Q750 12 780 4 Q810 -1 840 8 Q870 13 900 5 Q930 -1 960 6 Q990 11 1020 3 Q1050 -2 1080 7 Q1110 12 1140 4 Q1170 -1 1200 5 L1200 0 L0 0Z' fill='black'/%3E%3C/svg%3E");
+  mask-size: 100% 100%;
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 1200 12' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0 Q30 8 60 3 Q90 -2 120 5 Q150 10 180 2 Q210 -3 240 6 Q270 11 300 4 Q330 -1 360 7 Q390 12 420 3 Q450 -2 480 8 Q510 13 540 5 Q570 -1 600 6 Q630 11 660 3 Q690 -2 720 7 Q750 12 780 4 Q810 -1 840 8 Q870 13 900 5 Q930 -1 960 6 Q990 11 1020 3 Q1050 -2 1080 7 Q1110 12 1140 4 Q1170 -1 1200 5 L1200 0 L0 0Z' fill='black'/%3E%3C/svg%3E");
+  -webkit-mask-size: 100% 100%;
+}
+
+/* =============================================
+   MAP SURFACE — the drawn-on-parchment area
+   ============================================= */
 .map-surface {
   position: relative;
   isolation: isolate;
+  overflow: hidden;
+  /* Aged parchment with faint grid lines like old navigational charts */
   background:
-    linear-gradient(rgba(112, 66, 20, .045) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(112, 66, 20, .045) 1px, transparent 1px),
-    linear-gradient(135deg, rgba(250,243,224,.8), rgba(232,213,163,.52));
-  background-size: 42px 42px, 42px 42px, auto;
-  border: 1px solid rgba(112, 66, 20, .22);
-  box-shadow: 0 18px 40px rgba(44,24,16,.08), inset 0 0 70px rgba(112,66,20,.08);
+    /* Faint compass grid lines */
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 80px,
+      rgba(112, 66, 20, 0.03) 80px,
+      rgba(112, 66, 20, 0.03) 81px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 80px,
+      rgba(112, 66, 20, 0.03) 80px,
+      rgba(112, 66, 20, 0.03) 81px
+    ),
+    /* Coffee stain in center */
+    radial-gradient(ellipse 400px 350px at 50% 40%, rgba(139,90,43,.04), transparent),
+    /* Base parchment */
+    linear-gradient(135deg, rgba(232,217,180,.95), rgba(204,186,140,.8));
+  /* Rough border like torn paper edge */
+  border: 2px solid rgba(112,66,20,.2);
+  border-radius: 3px;
+  box-shadow:
+    /* Outer shadow — paper lift */
+    0 4px 16px rgba(44,24,16,.12),
+    /* Inner edge darkening */
+    inset 0 0 60px rgba(112,66,20,.08),
+    /* Paper thickness on right */
+    3px 3px 0 rgba(180,160,120,.4),
+    4px 4px 0 rgba(160,140,100,.2);
 }
 
-.map-surface::before,
+/* Inner border — like drawn margin line on old map */
+.map-surface::before {
+  content: '';
+  position: absolute;
+  inset: 14px;
+  border: 1px solid rgba(112,66,20,.15);
+  border-left: 2px solid rgba(139,37,0,.12);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Edge burn/darkening */
 .map-surface::after {
   content: '';
   position: absolute;
-  pointer-events: none;
-  z-index: -1;
-}
-.map-surface::before {
-  inset: 10px;
-  border: 1px dashed rgba(112, 66, 20, .22);
-}
-.map-surface::after {
   inset: 0;
-  background: radial-gradient(ellipse at center, transparent 45%, rgba(112,66,20,.11));
+  pointer-events: none;
+  z-index: 1;
+  background:
+    /* Top edge */
+    linear-gradient(to bottom, rgba(80,45,20,.1) 0%, transparent 5%),
+    /* Bottom edge */
+    linear-gradient(to top, rgba(80,45,20,.08) 0%, transparent 4%),
+    /* Left edge */
+    linear-gradient(to right, rgba(80,45,20,.06) 0%, transparent 3%),
+    /* Right edge */
+    linear-gradient(to left, rgba(80,45,20,.06) 0%, transparent 3%);
 }
 
-.map-card, .card {
-  background-color: var(--color-parchment-light);
+.map-surface__header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0 0 1.1rem;
+  margin-bottom: 2rem;
+  border-bottom: 2px solid rgba(112,66,20,.2);
 }
 
-.card {
-  position: relative;
-  border: 1px solid rgba(112,66,20,.2);
-  border-radius: 4px;
-  box-shadow: 2px 3px 12px rgba(44,24,16,.08);
-}
-
-.ribbon-label {
-  display: inline-flex;
-  align-items: center;
-  gap: .45rem;
-  padding: .35rem .75rem;
-  color: var(--color-parchment-light);
-  background: var(--color-ink);
-  font-family: var(--font-handwritten);
-  font-size: .62rem;
-  letter-spacing: .14em;
+.map-legend {
+  gap: 1rem;
+  color: var(--color-ink-muted);
+  font: 10px var(--font-handwritten);
   text-transform: uppercase;
-  box-shadow: 3px 3px 0 rgba(112,66,20,.18);
+  letter-spacing: .08em;
 }
-
-.voyage-header {
-  border-bottom: 1px solid rgba(244,232,193,.18);
-  background: linear-gradient(180deg, #3b241a 0%, #2c1810 100%);
-  color: var(--color-parchment-light);
-}
-.voyage-header::after {
-  content: '';
-  display: block;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, var(--color-gold), transparent);
-  opacity: .55;
-}
-.voyage-header__mark { display: flex; color: var(--color-gold-light); transition: transform .25s ease, color .25s ease; }
-.group:hover .voyage-header__mark { color: var(--color-parchment-light); transform: rotate(14deg); }
-.voyage-header__sub { color: rgba(244,232,193,.48); font: 9px var(--font-handwritten); letter-spacing: .1em; text-transform: uppercase; margin-top: -2px; }
-.voyage-header__link { color: rgba(244,232,193,.64); font: 11px var(--font-handwritten); letter-spacing: .12em; text-transform: uppercase; text-decoration: none; transition: color .2s ease; }
-.voyage-header__link:hover { color: var(--color-parchment-light); }
-.voyage-header__stat { color: var(--color-gold-light); border: 1px solid rgba(218,165,32,.3); background: rgba(218,165,32,.1); }
-.voyage-header__stat--streak { color: #e98b5a; border-color: rgba(162,71,45,.4); background: rgba(162,71,45,.14); }
-.voyage-header__login { display: inline-flex; align-items: center; justify-content: center; gap: 6px; color: var(--color-ink); background: var(--color-gold-light); border: 1px solid var(--color-gold-light); font-family: var(--font-body); font-weight: 600; text-transform: uppercase; letter-spacing: .05em; }
-.voyage-header__login:hover { background: var(--color-parchment-light); border-color: var(--color-parchment-light); }
-.voyage-header .voyage-lang-switch { color: rgba(244,232,193,.7); border-color: rgba(244,232,193,.3); }
-.voyage-header .voyage-lang-switch:hover { color: var(--color-parchment-light); border-color: var(--color-gold-light); }
+.map-legend span { display: inline-flex; align-items: center; gap: .35rem; }
+.legend-dot { width: 7px; height: 7px; display: inline-block; border-radius: 50%; border: 1px solid currentColor; }
+.legend-dot--done { color: var(--color-stamp-green); background: var(--color-stamp-green); }
+.legend-dot--current { color: var(--color-ocean); background: var(--color-ocean); box-shadow: 0 0 0 3px rgba(46,107,107,.12); }
+.legend-dot--locked { color: var(--color-ink-faded); background: transparent; }
 
 /* =============================================
-   VOYAGE MAP — one continuous sheet, plotted by hand
+   HERO SECTION — scroll title
    ============================================= */
-.voyage-page {
-  background:
-    radial-gradient(circle at 50% -10%, rgba(255,247,218,.9), transparent 32rem),
-    linear-gradient(125deg, rgba(92,61,46,.06), transparent 32%, rgba(46,107,107,.06)),
-    var(--color-parchment-dark);
-}
-
 .voyage-hero {
   min-height: 285px;
   overflow: hidden;
+  position: relative;
+  /* Old scroll/parchment feel */
   background:
-    linear-gradient(135deg, rgba(255,249,234,.96), rgba(244,232,193,.86)),
-    var(--color-parchment-light);
-  border: 1px solid rgba(112,66,20,.26);
-  box-shadow: 0 12px 30px rgba(44,24,16,.1), inset 0 0 55px rgba(112,66,20,.08);
+    /* Burn/age at edges */
+    radial-gradient(ellipse at center, rgba(240,228,200,.9) 60%, rgba(180,160,120,.5) 100%),
+    linear-gradient(135deg, #E0D0A8, #D4C49A, #CCBA8C);
+  border: 2px solid rgba(112,66,20,.25);
+  box-shadow:
+    0 8px 24px rgba(44,24,16,.12),
+    inset 0 0 80px rgba(112,66,20,.1),
+    /* Paper thickness */
+    3px 3px 0 rgba(180,160,120,.3);
 }
+
+/* Inner border */
 .voyage-hero::before {
   content: '';
   position: absolute;
   inset: 12px;
-  border: 1px solid rgba(112,66,20,.18);
+  border: 1px dashed rgba(112,66,20,.15);
   pointer-events: none;
 }
+
+/* Edge darkening */
 .voyage-hero::after {
   content: '';
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: radial-gradient(ellipse at center, transparent 40%, rgba(112,66,20,.14));
+  background:
+    radial-gradient(ellipse at center, transparent 40%, rgba(80,45,20,.12)),
+    linear-gradient(to bottom, rgba(80,45,20,.06) 0%, transparent 3%),
+    linear-gradient(to top, rgba(80,45,20,.06) 0%, transparent 3%);
 }
+
 .voyage-hero__copy { position: relative; z-index: 1; max-width: 610px; }
 .voyage-hero__compass {
   position: absolute;
@@ -210,206 +306,402 @@ a { color: inherit; }
 .voyage-title { letter-spacing: -.045em; }
 .voyage-title em { color: var(--color-ocean); font-weight: 500; }
 
-.map-surface {
-  overflow: hidden;
-  background:
-    linear-gradient(rgba(112, 66, 20, .035) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(112, 66, 20, .035) 1px, transparent 1px),
-    linear-gradient(135deg, rgba(250,243,224,.98), rgba(232,213,163,.72));
-  background-size: 42px 42px, 42px 42px, auto;
-  box-shadow: 0 20px 42px rgba(44,24,16,.16), inset 0 0 90px rgba(112,66,20,.1);
+/* =============================================
+   RIBBON LABEL — like a wax seal strip
+   ============================================= */
+.ribbon-label {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  padding: .35rem .75rem;
+  color: var(--color-parchment-light);
+  background: var(--color-ink);
+  font-family: var(--font-handwritten);
+  font-size: .62rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  box-shadow: 3px 3px 0 rgba(112,66,20,.2);
+  position: relative;
 }
-.map-surface__header {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 0 0 1.1rem;
-  margin-bottom: 2rem;
-  border-bottom: 1px solid rgba(112,66,20,.25);
-}
-.map-legend { gap: 1rem; color: var(--color-ink-muted); font: 10px var(--font-handwritten); text-transform: uppercase; letter-spacing: .08em; }
-.map-legend span { display: inline-flex; align-items: center; gap: .35rem; }
-.legend-dot { width: 7px; height: 7px; display: inline-block; border-radius: 50%; border: 1px solid currentColor; }
-.legend-dot--done { color: var(--color-stamp-green); background: var(--color-stamp-green); }
-.legend-dot--current { color: var(--color-ocean); background: var(--color-ocean); box-shadow: 0 0 0 3px rgba(46,107,107,.12); }
-.legend-dot--locked { color: var(--color-ink-faded); background: transparent; }
 
+/* =============================================
+   HEADER — aged dark leather bar
+   ============================================= */
+.voyage-header {
+  border-bottom: 2px solid rgba(80,45,20,.4);
+  background:
+    linear-gradient(180deg, #3b241a 0%, #2c1810 100%);
+  color: var(--color-parchment-light);
+  position: relative;
+}
+/* Gold trim line */
+.voyage-header::after {
+  content: '';
+  display: block;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--color-gold), transparent);
+  opacity: .55;
+}
+.voyage-header__mark { display: flex; color: var(--color-gold-light); transition: transform .25s ease, color .25s ease; }
+.group:hover .voyage-header__mark { color: var(--color-parchment-light); transform: rotate(14deg); }
+.voyage-header__sub { color: rgba(244,232,193,.48); font: 9px var(--font-handwritten); letter-spacing: .1em; text-transform: uppercase; margin-top: -2px; }
+.voyage-header__link { color: rgba(244,232,193,.64); font: 11px var(--font-handwritten); letter-spacing: .12em; text-transform: uppercase; text-decoration: none; transition: color .2s ease; }
+.voyage-header__link:hover { color: var(--color-parchment-light); }
+.voyage-header__stat { color: var(--color-gold-light); border: 1px solid rgba(218,165,32,.3); background: rgba(218,165,32,.1); }
+.voyage-header__stat--streak { color: #e98b5a; border-color: rgba(162,71,45,.4); background: rgba(162,71,45,.14); }
+.voyage-header__login { display: inline-flex; align-items: center; justify-content: center; gap: 6px; color: var(--color-ink); background: var(--color-gold-light); border: 1px solid var(--color-gold-light); font-family: var(--font-body); font-weight: 600; text-transform: uppercase; letter-spacing: .05em; }
+.voyage-header__login:hover { background: var(--color-parchment-light); border-color: var(--color-parchment-light); }
+.voyage-header .voyage-lang-switch { color: rgba(244,232,193,.7); border-color: rgba(244,232,193,.3); }
+.voyage-header .voyage-lang-switch:hover { color: var(--color-parchment-light); border-color: var(--color-gold-light); }
+
+/* =============================================
+   LEVEL & MODULE HEADERS — aged map labels
+   ============================================= */
 .level-region { position: relative; }
 .level-heading { text-align: center; }
-.level-heading__rule { position: absolute; left: 0; right: 0; top: 50%; height: 1px; background: rgba(112,66,20,.22); }
-.level-heading__number { font: 10px var(--font-handwritten); letter-spacing: .08em; color: var(--color-stamp-red); border-right: 1px solid rgba(112,66,20,.22); padding-right: .7rem; }
-.module-region { position: relative; }
-.module-region__label { display: flex; align-items: center; gap: .6rem; justify-content: center; margin-bottom: .4rem; color: var(--color-ink-muted); font: 10px var(--font-handwritten); letter-spacing: .16em; text-transform: uppercase; }
-.module-region__line { width: 34px; height: 1px; background: rgba(112,66,20,.32); }
-
-.route-canvas {
-  position: relative;
-  min-height: 420px;
-  margin: 0 -1rem 1.2rem;
-  overflow: hidden;
-  background: radial-gradient(ellipse at 50% 50%, rgba(232,240,238,.28), transparent 68%);
-}
-.route-canvas::before {
-  content: '';
+.level-heading__rule {
   position: absolute;
-  inset: 24px 8%;
-  border: 1px dashed rgba(46,107,107,.13);
-  border-radius: 50%;
-  transform: rotate(-5deg);
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 2px;
+  background: repeating-linear-gradient(
+    90deg,
+    rgba(112,66,20,.2) 0px,
+    rgba(112,66,20,.2) 8px,
+    transparent 8px,
+    transparent 12px
+  );
 }
-.route-canvas__path { position: absolute; z-index: 1; inset: 0; width: 100%; height: 100%; overflow: visible; }
-.route-canvas__path path { fill: none; stroke: var(--color-stamp-red); stroke-width: 3; stroke-dasharray: 10 11; stroke-linecap: round; opacity: .56; filter: drop-shadow(1px 1px 0 rgba(112,66,20,.1)); }
-.route-canvas__island, .route-canvas__compass { position: absolute; z-index: 0; pointer-events: none; opacity: .27; }
-.route-canvas__island--one { left: 4%; top: 20px; transform: rotate(-10deg); }
-.route-canvas__island--two { right: 4%; bottom: 25px; transform: rotate(7deg); }
-.route-canvas__compass { right: 45%; bottom: 35%; opacity: .14; transform: rotate(-14deg); }
-.route-grid { position: relative; z-index: 2; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, 190px); min-height: 380px; padding: 18px 2%; }
-.route-grid__item { display: flex; justify-content: center; align-items: center; min-width: 0; }
-
-.quest-stop { position: relative; min-height: 176px; display: flex; justify-content: center; width: 100%; }
-.quest-stop__button { position: relative; display: flex; flex-direction: column; align-items: center; width: min(190px, 100%); padding: 0; border: 0; background: transparent; color: var(--color-ink); cursor: pointer; }
-.quest-stop__button:disabled { cursor: not-allowed; }
-.quest-stop__landmark { position: absolute; z-index: 0; top: -14px; left: 50%; transform: translateX(-50%); opacity: .68; filter: sepia(.18) saturate(.8); transition: transform .25s ease, opacity .25s ease; }
-.quest-stop__button:hover .quest-stop__landmark { transform: translateX(-50%) translateY(-4px) scale(1.06); opacity: .9; }
-.quest-stop__pin-wrap { position: relative; z-index: 2; display: block; margin-top: 32px; width: 45px; height: 54px; }
-.quest-stop__pin { position: relative; z-index: 2; display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; margin: 0 auto; color: currentColor; background: var(--color-parchment-light); border: 2px solid currentColor; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); box-shadow: 2px 3px 0 rgba(44,24,16,.14); }
-.quest-stop__pin > * { transform: rotate(45deg); }
-.quest-stop__pin-shadow { position: absolute; bottom: 0; left: 50%; width: 34px; height: 7px; transform: translateX(-50%); background: rgba(44,24,16,.18); border-radius: 50%; filter: blur(2px); }
-.quest-stop__label { position: relative; z-index: 3; display: flex; flex-direction: column; gap: 3px; width: 172px; min-height: 64px; margin-top: -2px; padding: 7px 10px 8px; text-align: left; background: rgba(250,243,224,.94); border: 1px solid rgba(112,66,20,.28); box-shadow: 2px 3px 0 rgba(112,66,20,.12); transform: rotate(-1.5deg); transition: transform .25s ease, box-shadow .25s ease; }
-.quest-stop:nth-child(even) .quest-stop__label { transform: rotate(1.5deg); }
-.quest-stop__button:hover .quest-stop__label { transform: translateY(-3px) rotate(0); box-shadow: 3px 6px 9px rgba(44,24,16,.14); }
-.quest-stop__eyebrow { display: flex; align-items: center; justify-content: space-between; color: var(--color-stamp-red); font: 9px var(--font-handwritten); letter-spacing: .1em; text-transform: uppercase; }
-.quest-stop__status { color: var(--color-ink-muted); font-size: 8px; letter-spacing: .05em; }
-.quest-stop__title { display: block; font: italic 12px/1.2 var(--font-display); color: var(--color-ink); }
-.quest-stop__meta { display: inline-flex; align-items: center; gap: 3px; color: var(--color-gold); font: 9px var(--font-handwritten); }
-.quest-stop--locked .quest-stop__landmark, .quest-stop--locked .quest-stop__label { opacity: .4; filter: grayscale(.8); }
-.quest-stop--locked .quest-stop__pin { border-style: dashed; }
-.quest-stop--current .quest-stop__pin-wrap { animation: current-marker 2s ease-in-out infinite; }
-.quest-stop--current .quest-stop__pin { background: var(--color-ocean); color: var(--color-parchment-light); border-color: var(--color-ocean); box-shadow: 2px 3px 0 rgba(44,24,16,.16), 0 0 0 6px rgba(46,107,107,.1); }
-.quest-stop--special .quest-stop__pin { width: 48px; height: 48px; border-width: 2px; }
-.stop-number-line { display: none; }
-@keyframes current-marker { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
-
-.module-divider, .region-divider { display: flex; align-items: center; justify-content: center; gap: 1rem; color: var(--color-gold); }
-.module-divider { margin: 0 0 2rem; opacity: .7; }
-.module-divider::before, .module-divider::after, .region-divider__line { content: ''; display: block; width: 82px; height: 1px; background: rgba(112,66,20,.24); }
-.region-divider { gap: 1.5rem; margin: 1rem 0 3.5rem; }
-.region-divider__art { display: flex; align-items: center; gap: 1rem; height: 82px; opacity: .55; }
-.map-endmark { display: flex; flex-direction: column; align-items: center; gap: .2rem; padding: 2rem 0 .7rem; color: var(--color-ink-muted); }
-.map-endmark__x { color: var(--color-stamp-red); font: 500 58px/38px var(--font-display); transform: rotate(-9deg); }
-
-@media (max-width: 640px) {
-  .voyage-hero { margin-left: .75rem; margin-right: .75rem; min-height: 310px; }
-  .voyage-hero__compass { right: -30px; top: 35%; opacity: .24; }
-  .voyage-hero__copy { max-width: 78%; }
-  .map-surface__header { align-items: flex-start; flex-direction: column; margin-bottom: 1.5rem; }
-  .route-canvas { min-height: 0; margin: 0 -.25rem 1rem; }
-  .route-canvas::before, .route-canvas__island, .route-canvas__compass { display: none; }
-  .route-canvas__path { opacity: .65; }
-  .route-grid { grid-template-columns: 1fr; grid-template-rows: none; min-height: 0; gap: 1rem; padding: 1.5rem 0 1.5rem; }
-  .route-grid__item { grid-column: 1 !important; grid-row: auto !important; }
-  .quest-stop { min-height: 145px; }
-  .quest-stop__landmark { top: -4px; }
-  .quest-stop__pin-wrap { margin-top: 29px; }
-  .module-divider::before, .module-divider::after, .region-divider__line { width: 42px; }
-  .region-divider { margin-bottom: 2.5rem; }
+.level-heading__number {
+  font: 10px var(--font-handwritten);
+  letter-spacing: .08em;
+  color: var(--color-stamp-red);
+  border-right: 2px solid rgba(112,66,20,.2);
+  padding-right: .7rem;
 }
-
-/* Paper grain overlay */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 9999;
-  opacity: 0.08;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  mix-blend-mode: multiply;
+.module-region { position: relative; }
+.module-region__label {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  justify-content: center;
+  margin-bottom: .4rem;
+  color: var(--color-ink-muted);
+  font: 10px var(--font-handwritten);
+  letter-spacing: .16em;
+  text-transform: uppercase;
 }
-
-h1, h2, h3, h4 {
-  font-family: var(--font-display);
-  line-height: 1.2;
-  color: var(--color-ink);
-}
-
-::selection {
-  background: var(--color-gold);
-  color: var(--color-parchment);
-}
-
-:focus-visible {
-  outline: 2px solid var(--color-ocean);
-  outline-offset: 2px;
+.module-region__line {
+  width: 34px;
+  height: 1px;
+  background: rgba(112,66,20,.32);
 }
 
 /* =============================================
-   TYPOGRAPHY
+   WINDING PATH — the treasure trail
    ============================================= */
-.font-display { font-family: var(--font-display); }
-.font-body { font-family: var(--font-body); }
-.font-handwritten { font-family: var(--font-handwritten); }
-
-/* =============================================
-   CARDS — like paper pinned to a map
-   ============================================= */
-.map-card {
-  background: var(--color-parchment-light);
-  border: 1px solid var(--color-ink-faded);
-  border-radius: 3px;
-  box-shadow:
-    2px 2px 0 rgba(44, 24, 16, 0.08),
-    4px 4px 12px rgba(44, 24, 16, 0.06);
-  transition: all 0.2s ease;
+.map-trail {
   position: relative;
+  padding: 2rem 0;
 }
 
-.map-card::before {
+/* The SVG winding path */
+.map-trail__svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  overflow: visible;
+}
+
+/* The dashed trail line */
+.map-trail__line {
+  fill: none;
+  stroke: var(--color-stamp-red);
+  stroke-width: 3;
+  stroke-dasharray: 12 10;
+  stroke-linecap: round;
+  opacity: 0.5;
+  filter: drop-shadow(1px 1px 0 rgba(112,66,20,.15));
+}
+
+/* Traveled portion of the trail */
+.map-trail__line-done {
+  stroke: var(--color-ocean);
+  stroke-width: 3.5;
+  stroke-dasharray: none;
+  opacity: 0.7;
+  filter: drop-shadow(1px 1px 0 rgba(46,107,107,.2));
+}
+
+/* =============================================
+   QUEST NODE — map pin on parchment
+   ============================================= */
+.quest-pin {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: transform .3s cubic-bezier(.34,1.56,.64,1);
+  z-index: 2;
+}
+
+.quest-pin:hover {
+  transform: translateY(-6px) scale(1.05);
+  z-index: 10;
+}
+
+.quest-pin:active {
+  transform: translateY(-2px) scale(0.98);
+}
+
+.quest-pin--locked {
+  opacity: 0.35;
+  filter: grayscale(0.6) sepia(0.3);
+  cursor: not-allowed;
+}
+
+.quest-pin--locked:hover {
+  transform: none;
+}
+
+/* The pin marker — like a map pin */
+.quest-pin__marker {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2.5px solid;
+  box-shadow: 2px 3px 0 rgba(44,24,16,.15);
+  transition: all .3s ease;
+}
+
+.quest-pin__marker > * {
+  transform: rotate(45deg);
+}
+
+/* Pin shadow */
+.quest-pin__shadow {
+  width: 28px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(44,24,16,.15);
+  filter: blur(3px);
+  margin-top: 4px;
+}
+
+/* Status colors for pins */
+.quest-pin--completed .quest-pin__marker {
+  background: var(--color-stamp-green);
+  border-color: var(--color-stamp-green);
+  color: white;
+  box-shadow: 2px 3px 0 rgba(44,24,16,.15), 0 0 12px rgba(46,94,62,.2);
+}
+
+.quest-pin--in_progress .quest-pin__marker {
+  background: var(--color-ocean);
+  border-color: var(--color-ocean);
+  color: white;
+  box-shadow: 2px 3px 0 rgba(44,24,16,.15), 0 0 16px rgba(46,107,107,.3);
+}
+
+.quest-pin--unlocked .quest-pin__marker {
+  background: var(--color-parchment-light);
+  border-color: var(--color-gold);
+  color: var(--color-gold);
+  box-shadow: 2px 3px 0 rgba(44,24,16,.15), 0 0 10px rgba(184,134,11,.15);
+}
+
+.quest-pin--locked .quest-pin__marker {
+  background: var(--color-parchment-dark);
+  border-color: var(--color-ink-faded);
+  border-style: dashed;
+  color: var(--color-ink-faded);
+}
+
+/* Pulse animation for active quest */
+@keyframes quest-pulse {
+  0%, 100% { box-shadow: 2px 3px 0 rgba(44,24,16,.15), 0 0 0 0 rgba(46,107,107,.3); }
+  50% { box-shadow: 2px 3px 0 rgba(44,24,16,.15), 0 0 0 10px rgba(46,107,107,0); }
+}
+
+.quest-pin--in_progress .quest-pin__marker {
+  animation: quest-pulse 2.5s ease-in-out infinite;
+}
+
+/* Quest label — like a paper tag */
+.quest-pin__label {
+  margin-top: 10px;
+  padding: 6px 12px;
+  max-width: 160px;
+  text-align: center;
+  background:
+    linear-gradient(135deg, rgba(240,228,200,.95), rgba(220,200,160,.9));
+  border: 1px solid rgba(112,66,20,.2);
+  box-shadow: 2px 2px 0 rgba(112,66,20,.1);
+  position: relative;
+  transform: rotate(-1deg);
+  transition: transform .3s ease, box-shadow .3s ease;
+}
+
+/* Alternate rotation for visual variety */
+.quest-pin:nth-child(even) .quest-pin__label {
+  transform: rotate(1.5deg);
+}
+
+.quest-pin:hover .quest-pin__label {
+  transform: rotate(0deg) translateY(-2px);
+  box-shadow: 3px 4px 8px rgba(44,24,16,.12);
+}
+
+/* Corner fold on label */
+.quest-pin__label::after {
   content: '';
   position: absolute;
   top: 0;
-  left: 0;
   right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, transparent, rgba(139, 115, 85, 0.15), transparent);
+  width: 10px;
+  height: 10px;
+  background: linear-gradient(225deg, var(--color-parchment-dark) 50%, transparent 50%);
 }
 
-.map-card:hover {
-  box-shadow:
-    2px 2px 0 rgba(44, 24, 16, 0.12),
-    6px 6px 20px rgba(44, 24, 16, 0.08);
-  transform: translateY(-1px);
+.quest-pin__title {
+  font: italic 11px/1.2 var(--font-display);
+  color: var(--color-ink);
+  display: block;
+}
+
+.quest-pin--locked .quest-pin__title {
+  color: var(--color-ink-faded);
+}
+
+.quest-pin__meta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin-top: 3px;
+  font: 8px var(--font-handwritten);
+  color: var(--color-gold);
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+
+.quest-pin--locked .quest-pin__meta {
+  color: var(--color-ink-faded);
 }
 
 /* =============================================
-   BUTTONS — worn, adventure-style
+   SHIP ANIMATION — sailing between quests
+   ============================================= */
+@keyframes ship-sail {
+  0% { offset-distance: 0%; }
+  100% { offset-distance: 100%; }
+}
+
+.ship-sailing {
+  position: absolute;
+  z-index: 100;
+  offset-rotate: auto 90deg;
+  animation: ship-sail 2.5s cubic-bezier(.25,.1,.25,1) forwards;
+  filter: drop-shadow(2px 3px 4px rgba(44,24,16,.3));
+  pointer-events: none;
+}
+
+/* =============================================
+   DIVIDERS — map decoration
+   ============================================= */
+.module-divider, .region-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  color: var(--color-gold);
+}
+.module-divider { margin: 0 0 2rem; opacity: .7; }
+.module-divider::before, .module-divider::after, .region-divider__line {
+  content: '';
+  display: block;
+  width: 82px;
+  height: 2px;
+  background: repeating-linear-gradient(
+    90deg,
+    rgba(112,66,20,.25) 0px,
+    rgba(112,66,20,.25) 6px,
+    transparent 6px,
+    transparent 10px
+  );
+}
+.region-divider { gap: 1.5rem; margin: 1rem 0 3.5rem; }
+.region-divider__art { display: flex; align-items: center; gap: 1rem; height: 82px; opacity: .55; }
+.map-endmark { display: flex; flex-direction: column; align-items: center; gap: .2rem; padding: 2rem 0 .7rem; color: var(--color-ink-muted); }
+.map-endmark__x {
+  color: var(--color-stamp-red);
+  font: 500 58px/38px var(--font-display);
+  transform: rotate(-9deg);
+  text-shadow: 2px 2px 0 rgba(139,37,0,.15);
+}
+
+/* =============================================
+   BUTTONS — adventure style
    ============================================= */
 .btn-adventure {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background: var(--color-ocean);
-  color: var(--color-parchment);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.1) 0%, transparent 100%),
+    var(--color-ocean);
+  color: var(--color-parchment-light);
   font-family: var(--font-body);
   font-weight: 600;
-  font-size: 14px;
   padding: 10px 24px;
-  border-radius: 4px;
+  border-radius: 3px;
   border: 2px solid var(--color-ocean);
   cursor: pointer;
   transition: all 0.2s ease;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.03em;
   text-transform: uppercase;
   font-size: 12px;
+  box-shadow: 2px 3px 0 rgba(44,24,16,.15);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-adventure::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.15), transparent);
+  transition: left 0.5s ease;
+}
+
+.btn-adventure:hover::before {
+  left: 100%;
 }
 
 .btn-adventure:hover {
   background: var(--color-ocean-light);
   border-color: var(--color-ocean-light);
   transform: translateY(-1px);
-  box-shadow: 0 3px 8px rgba(46, 107, 107, 0.3);
+  box-shadow: 2px 4px 8px rgba(46, 107, 107, .3);
+}
+
+.btn-adventure:active {
+  transform: translateY(1px);
+  box-shadow: 1px 1px 0 rgba(44,24,16,.15);
 }
 
 .btn-parchment {
@@ -423,10 +715,11 @@ h1, h2, h3, h4 {
   font-weight: 500;
   font-size: 14px;
   padding: 10px 24px;
-  border-radius: 4px;
+  border-radius: 3px;
   border: 1.5px solid var(--color-ink-faded);
   cursor: pointer;
   transition: all 0.2s ease;
+  box-shadow: 1px 2px 0 rgba(44,24,16,.08);
 }
 
 .btn-parchment:hover {
@@ -460,7 +753,7 @@ h1, h2, h3, h4 {
 }
 
 /* =============================================
-   BADGES — stamped look
+   STAMP BADGES — wax seal style
    ============================================= */
 .stamp {
   display: inline-flex;
@@ -475,7 +768,6 @@ h1, h2, h3, h4 {
   letter-spacing: 0.08em;
   transform: rotate(-1deg);
 }
-
 .stamp-ocean { color: var(--color-ocean); }
 .stamp-red { color: var(--color-stamp-red); }
 .stamp-green { color: var(--color-stamp-green); }
@@ -491,7 +783,6 @@ h1, h2, h3, h4 {
   height: 6px;
   opacity: 0.3;
 }
-
 .trail-fill {
   height: 100%;
   border-radius: 999px;
@@ -500,32 +791,34 @@ h1, h2, h3, h4 {
 }
 
 /* =============================================
-   DOTTED PATH — adventure trail
+   CARDS — paper pinned to map
    ============================================= */
-.dotted-path {
-  stroke: var(--color-ink-muted);
-  stroke-width: 2;
-  stroke-dasharray: 6 4;
-  fill: none;
+.map-card {
+  background: var(--color-parchment-light);
+  border: 1px solid rgba(112,66,20,.2);
+  border-radius: 3px;
+  box-shadow:
+    2px 2px 0 rgba(44, 24, 16, 0.08),
+    4px 4px 12px rgba(44, 24, 16, 0.06);
+  transition: all 0.2s ease;
+  position: relative;
 }
 
-.dotted-path-active {
-  stroke: var(--color-ocean);
-  stroke-width: 2.5;
-  stroke-dasharray: 6 4;
-  fill: none;
+.map-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, rgba(139, 115, 85, 0.15), transparent);
 }
 
-/* =============================================
-   MAP PIN
-   ============================================= */
-.map-pin {
-  width: 16px;
-  height: 16px;
-  border-radius: 50% 50% 50% 0;
-  transform: rotate(-45deg);
-  border: 2px solid white;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+.map-card:hover {
+  box-shadow:
+    2px 2px 0 rgba(44, 24, 16, 0.12),
+    6px 6px 20px rgba(44, 24, 16, 0.08);
+  transform: translateY(-1px);
 }
 
 /* =============================================
@@ -552,13 +845,41 @@ h1, h2, h3, h4 {
   100% { box-shadow: 0 0 0 8px rgba(46, 107, 107, 0); }
 }
 
-.animate-fade-in-up {
-  animation: fade-in-up 0.5s ease both;
+@keyframes float-gentle {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
 }
 
-.animate-pin-drop {
-  animation: pin-drop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+@keyframes bob {
+  0%, 100% { transform: translateY(0) rotate(-1deg); }
+  25% { transform: translateY(-4px) rotate(0.5deg); }
+  75% { transform: translateY(2px) rotate(-1.5deg); }
 }
+
+@keyframes wave-flag {
+  0%, 100% { transform: scaleX(1); }
+  50% { transform: scaleX(1.08); }
+}
+
+@keyframes sparkle {
+  0%, 100% { opacity: 0; transform: scale(0); }
+  50% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes ink-draw {
+  from { stroke-dashoffset: 1000; }
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes map-unfold {
+  0% { opacity: 0; transform: scaleY(0.3); transform-origin: top; }
+  100% { opacity: 1; transform: scaleY(1); transform-origin: top; }
+}
+
+.animate-fade-in-up { animation: fade-in-up 0.5s ease both; }
+.animate-pin-drop { animation: pin-drop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+.animate-float { animation: float-gentle 3s ease-in-out infinite; }
+.animate-bob { animation: bob 4s ease-in-out infinite; }
 
 /* =============================================
    SCROLLBAR
@@ -569,34 +890,6 @@ h1, h2, h3, h4 {
   background: var(--color-ink-faded);
   border-radius: 4px;
   border: 2px solid var(--color-parchment-dark);
-}
-
-/* =============================================
-   QUEST STATES
-   ============================================= */
-.quest-locked {
-  opacity: 0.45;
-  filter: grayscale(0.3);
-}
-
-.quest-locked:hover {
-  opacity: 0.6;
-}
-
-.quest-available {
-  border-color: var(--color-gold);
-  border-width: 2px;
-}
-
-.quest-active {
-  border-color: var(--color-ocean);
-  border-width: 2px;
-  animation: pulse-ring 2s ease infinite;
-}
-
-.quest-done {
-  border-color: var(--color-stamp-green);
-  opacity: 0.85;
 }
 
 /* =============================================
@@ -628,4 +921,22 @@ h1, h2, h3, h4 {
   background: linear-gradient(225deg, var(--color-parchment-dark) 50%, transparent 50%);
   border-left: 1px solid var(--color-ink-faded);
   border-bottom: 1px solid var(--color-ink-faded);
+}
+
+/* =============================================
+   RESPONSIVE
+   ============================================= */
+@media (max-width: 640px) {
+  .voyage-hero {
+    margin-left: .75rem;
+    margin-right: .75rem;
+    min-height: 310px;
+  }
+  .voyage-hero__compass { right: -30px; top: 35%; opacity: .24; }
+  .voyage-hero__copy { max-width: 78%; }
+  .map-surface__header { align-items: flex-start; flex-direction: column; margin-bottom: 1.5rem; }
+  .module-divider::before, .module-divider::after, .region-divider__line { width: 42px; }
+  .region-divider { margin-bottom: 2.5rem; }
+  .quest-pin__label { max-width: 130px; }
+  .quest-pin__title { font-size: 10px; }
 }

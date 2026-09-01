@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { motion, AnimatePresence, useInView } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { useCourseData } from '../hooks/useCourseData';
 import { useAuth } from '../lib/auth';
@@ -8,7 +8,8 @@ import { QuestNode } from '../components/QuestNode';
 import { QuestModal } from '../components/QuestModal';
 import { ProgressTracker } from '../components/ProgressTracker';
 import { CompassRose } from '../components/AdventureIcons';
-import { SailingShip, PalmTree, MountainRange, Waves, SeaMonster, Island, CompassRoseFull, Binoculars } from '../components/MapIllustrations';
+import { SailingShip, PalmTree, MountainRange, Waves, SeaMonster, Island, CompassRoseFull, Binoculars, Castle } from '../components/MapIllustrations';
+import { SailingShipMini } from '../components/SailingShipAnimation';
 import type { Quest, QuestStatus, Level } from '../types/course';
 
 interface ProgressMap { [questId: string]: QuestStatus }
@@ -21,6 +22,8 @@ export function PathMap() {
   const [selectedQuest, setSelectedQuest] = useState<Quest | null>(null);
   const [progress, setProgress] = useState<ProgressMap>({});
   const { levels, loading, error, source } = useCourseData();
+  const [sailingTo, setSailingTo] = useState<string | null>(null);
+  const mapRef = useRef<HTMLDivElement>(null);
 
   const fetchProgress = useCallback(async () => {
     if (!user) return;
@@ -58,8 +61,13 @@ export function PathMap() {
 
   const handleQuestComplete = useCallback(async (questId: string, score?: number) => {
     if (!user) return;
-    const quest = levels.flatMap((l) => l.modules.flatMap((m) => m.quests)).find((q) => q.id === questId);
+    const allQuests = levels.flatMap((l) => l.modules.flatMap((m) => m.quests));
+    const quest = allQuests.find((q) => q.id === questId);
     if (!quest) return;
+
+    // Show ship sailing animation
+    setSailingTo(questId);
+
     await supabase.from('user_progress').upsert({ user_id: user.id, quest_id: questId, status: 'completed', quiz_score: score ?? null, completed_at: new Date().toISOString() }, { onConflict: 'user_id,quest_id' });
     const { data: prof } = await supabase.from('profiles').select('xp').eq('id', user.id).single();
     if (prof) await supabase.from('profiles').update({ xp: prof.xp + quest.xp_reward }).eq('id', user.id);
@@ -71,12 +79,11 @@ export function PathMap() {
       if (p.last_active_date !== today) s = p.last_active_date === y ? s + 1 : 1;
       await supabase.from('profiles').update({ streak_count: s, last_active_date: today }).eq('id', user.id);
     }
-    const all = levels.flatMap((l) => l.modules.flatMap((m) => m.quests));
-    const idx = all.findIndex((q) => q.id === questId);
+    const idx = allQuests.findIndex((q) => q.id === questId);
     setProgress((prev) => {
       const up: ProgressMap = { ...prev, [questId]: 'completed' };
-      if (idx < all.length - 1) {
-        const next = all[idx + 1];
+      if (idx < allQuests.length - 1) {
+        const next = allQuests[idx + 1];
         if (up[next.id] === 'locked' || !up[next.id]) {
           up[next.id] = 'unlocked';
           supabase.from('user_progress').upsert({ user_id: user.id, quest_id: next.id, status: 'unlocked' }, { onConflict: 'user_id,quest_id' });
@@ -86,6 +93,9 @@ export function PathMap() {
     });
     if (quest.level_id) await checkBadge(quest.level_id);
     await refreshProfile();
+
+    // Clear ship animation after delay
+    setTimeout(() => setSailingTo(null), 2800);
   }, [user, levels, checkBadge, refreshProfile]);
 
   if (loading) {
@@ -101,16 +111,28 @@ export function PathMap() {
 
   return (
     <div className="voyage-page min-h-screen pb-24 relative overflow-hidden">
-      {/* Scattered background illustrations */}
+      {/* Scattered background decorations */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
-        <div className="absolute top-28 right-4 sm:right-12 opacity-[0.08] rotate-12"><CompassRoseFull size={190} /></div>
-        <div className="absolute top-52 -left-4 sm:left-8 opacity-[0.08] -rotate-12"><SailingShip size={210} /></div>
-        <div className="absolute top-[44%] -right-8 sm:right-0 opacity-[0.07] rotate-3"><MountainRange size={240} /></div>
-        <div className="absolute bottom-40 -left-8 sm:left-4 opacity-[0.07] rotate-6"><SeaMonster size={180} /></div>
-        <div className="absolute top-[31%] left-[5%] opacity-[0.07] -rotate-6"><Waves size={160} /></div>
-        <div className="absolute top-[70%] right-[10%] opacity-[0.06] rotate-8"><Waves size={140} /></div>
-        <div className="absolute top-[55%] left-[2%] opacity-[0.06]"><PalmTree size={80} /></div>
-        <div className="absolute bottom-20 right-8 opacity-[0.06] -rotate-12"><Binoculars size={80} /></div>
+        <div className="absolute top-20 right-4 sm:right-12 opacity-[0.12] rotate-12"><CompassRoseFull size={200} /></div>
+        <div className="absolute top-48 -left-4 sm:left-8 opacity-[0.1] -rotate-12"><SailingShip size={220} /></div>
+        <div className="absolute top-[42%] -right-8 sm:right-0 opacity-[0.08] rotate-3"><MountainRange size={260} /></div>
+        <div className="absolute bottom-40 -left-8 sm:left-4 opacity-[0.08] rotate-6"><SeaMonster size={200} /></div>
+        <div className="absolute top-[28%] left-[3%] opacity-[0.1] -rotate-6"><Waves size={180} /></div>
+        <div className="absolute top-[65%] right-[8%] opacity-[0.08] rotate-8"><Waves size={160} /></div>
+        <div className="absolute top-[50%] left-[1%] opacity-[0.08]"><PalmTree size={90} /></div>
+        <div className="absolute bottom-16 right-8 opacity-[0.07] -rotate-12"><Binoculars size={90} /></div>
+        <div className="absolute top-[75%] left-[15%] opacity-[0.06] rotate-12"><Island size={120} /></div>
+        <div className="absolute top-[85%] right-[5%] opacity-[0.06]"><Castle size={100} /></div>
+        {/* Coordinate markers scattered around */}
+        <div className="absolute top-32 left-[20%] font-handwritten text-[9px] text-[var(--color-ink-faded)] opacity-20 rotate-[-3deg]">12°45'N</div>
+        <div className="absolute top-[35%] right-[15%] font-handwritten text-[9px] text-[var(--color-ink-faded)] opacity-20 rotate-[5deg]">95°30'E</div>
+        <div className="absolute bottom-[25%] left-[30%] font-handwritten text-[9px] text-[var(--color-ink-faded)] opacity-20 rotate-[-2deg]">7°12'S</div>
+        {/* Skull and crossbones watermark */}
+        <div className="absolute bottom-[15%] right-[20%] opacity-[0.05] rotate-[-15deg]">
+          <svg width="80" height="80" viewBox="0 0 24 24" fill="var(--color-ink)">
+            <path d="M12 2C8.13 2 5 5.13 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.87-3.13-7-7-7zM9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1z"/>
+          </svg>
+        </div>
       </div>
 
       {/* Hero section */}
@@ -141,7 +163,14 @@ export function PathMap() {
 
       {user && Object.keys(progress).length > 0 && <ProgressTracker levels={levels} progress={progress} />}
 
-      <div className="relative max-w-5xl mx-auto px-4 sm:px-6">
+      {/* Ship sailing animation overlay */}
+      <AnimatePresence>
+        {sailingTo && (
+          <SailingShipMini targetQuestId={sailingTo} />
+        )}
+      </AnimatePresence>
+
+      <div className="relative max-w-5xl mx-auto px-4 sm:px-6" ref={mapRef}>
         <div className="map-surface rounded-sm p-4 sm:p-10">
           <div className="map-surface__header">
             <div>
@@ -156,10 +185,10 @@ export function PathMap() {
           </div>
 
           {levels.map((level, li) => (
-            <motion.section key={level.id} className="level-region" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: li * 0.12 }}>
+            <motion.section key={level.id} className="level-region" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: li * 0.15 }}>
               <div className="level-heading relative mb-7 sm:mb-9">
                 <div className="level-heading__rule" />
-                <div className="relative inline-flex items-center gap-3 bg-[var(--color-parchment)] px-4 py-2.5">
+                <div className="relative inline-flex items-center gap-3 bg-[var(--color-parchment)] px-4 py-2.5" style={{ boxShadow: '0 2px 8px rgba(44,24,16,.08)' }}>
                   <span className="level-heading__number">{String(li + 1).padStart(2, '0')}</span>
                   <span className="text-xl">{level.emoji}</span>
                   <div>
@@ -178,18 +207,29 @@ export function PathMap() {
                     <span className="module-region__line" />
                   </div>
 
-                  {/* Quest landmarks grid */}
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6 sm:gap-8 py-6 px-2">
-                    {module.quests.map((quest, index) => (
-                      <div key={quest.id} className="flex justify-center">
-                        <QuestNode
-                          quest={quest}
-                          status={progress[quest.id] || 'locked'}
-                          index={index}
-                          onClick={() => setSelectedQuest(quest)}
-                        />
-                      </div>
-                    ))}
+                  {/* Winding quest trail */}
+                  <div className="map-trail">
+                    <div className="flex flex-col gap-4 sm:gap-6 py-6 px-2 sm:px-8">
+                      {module.quests.map((quest, index) => {
+                        // Alternate left/right for winding effect
+                        const isLeft = index % 2 === 0;
+                        // Calculate offset for winding
+                        const offset = isLeft ? 'ml-0 sm:ml-[5%]' : 'ml-auto sm:mr-[5%] mr-0';
+
+                        return (
+                          <WindingQuestStop
+                            key={quest.id}
+                            quest={quest}
+                            status={progress[quest.id] || 'locked'}
+                            index={index}
+                            isLeft={isLeft}
+                            offset={offset}
+                            onClick={() => setSelectedQuest(quest)}
+                            totalInModule={module.quests.length}
+                          />
+                        );
+                      })}
+                    </div>
                   </div>
 
                   {mi < level.modules.length - 1 && <div className="module-divider"><span>✦</span></div>}
@@ -215,5 +255,59 @@ export function PathMap() {
 
       <AnimatePresence>{selectedQuest && <QuestModal quest={selectedQuest} onClose={() => setSelectedQuest(null)} onComplete={handleQuestComplete} />}</AnimatePresence>
     </div>
+  );
+}
+
+/* =============================================
+   WINDING QUEST STOP — pin along the trail
+   ============================================= */
+function WindingQuestStop({ quest, status, index, isLeft, offset, onClick, totalInModule }: {
+  quest: Quest;
+  status: QuestStatus;
+  index: number;
+  isLeft: boolean;
+  offset: string;
+  onClick: () => void;
+  totalInModule: number;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const isInView = useInView(ref, { once: true, margin: '-50px' });
+
+  return (
+    <motion.div
+      ref={ref}
+      className={`relative ${offset} max-w-[260px] sm:max-w-[280px]`}
+      initial={{ opacity: 0, x: isLeft ? -40 : 40, y: 20 }}
+      animate={isInView ? { opacity: 1, x: 0, y: 0 } : {}}
+      transition={{ delay: index * 0.1, duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
+    >
+      {/* Connector line to center */}
+      <div
+        className="hidden sm:block absolute top-1/2 h-[2px] opacity-30"
+        style={{
+          [isLeft ? 'right' : 'left']: '-60px',
+          width: '60px',
+          background: `repeating-linear-gradient(90deg, var(--color-ink-muted) 0px, var(--color-ink-muted) 4px, transparent 4px, transparent 8px)`,
+          transform: 'translateY(-50%)',
+        }}
+      />
+
+      {/* The quest node */}
+      <QuestNode
+        quest={quest}
+        status={status}
+        index={index}
+        onClick={onClick}
+      />
+
+      {/* Trail marker between nodes */}
+      {index < totalInModule - 1 && (
+        <div className="absolute left-1/2 -bottom-4 sm:-bottom-6 -translate-x-1/2 opacity-25">
+          <svg width="20" height="20" viewBox="0 0 20 20">
+            <path d="M10 0 L13 7 L10 5 L7 7 Z" fill="var(--color-stamp-red)" />
+          </svg>
+        </div>
+      )}
+    </motion.div>
   );
 }
