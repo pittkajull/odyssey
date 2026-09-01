@@ -1,0 +1,631 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400;1,600&family=Crimson+Pro:wght@300;400;500;600;700&family=Special+Elite&display=swap');
+
+@import "tailwindcss";
+
+@theme {
+  --color-parchment: #F4E8C1;
+  --color-parchment-light: #FAF3E0;
+  --color-parchment-dark: #E8D5A3;
+  --color-ink: #2C1810;
+  --color-ink-light: #5C3D2E;
+  --color-ink-muted: #8B7355;
+  --color-ink-faded: #B8A88A;
+  --color-sepia: #704214;
+  --color-sepia-light: #A0724A;
+  --color-stamp-red: #8B2500;
+  --color-stamp-green: #2E5E3E;
+  --color-ocean: #2E6B6B;
+  --color-ocean-light: #3D8B8B;
+  --color-ocean-pale: #E8F0EE;
+  --color-gold: #B8860B;
+  --color-gold-light: #DAA520;
+  --color-compass: #8B4513;
+
+  /* Legacy aliases kept for the profile and quiz surfaces. */
+  --color-sand: #D8BE8A;
+  --color-stone: #9B896E;
+  --color-bark: #5C3D2E;
+  --color-emerald: #2E5E3E;
+  --color-emerald-bg: #E6EFE7;
+  --color-amber: #B8860B;
+  --color-amber-bg: #F3E5B8;
+  --color-terracotta: #A2472D;
+  --color-terracotta-bg: #F4E0D8;
+
+  --color-odyssey-bg: #F4E8C1;
+  --color-odyssey-panel: #FAF3E0;
+  --color-odyssey-panel-light: #FFF9EA;
+  --color-odyssey-border: #C9B38A;
+  --color-odyssey-text: #2C1810;
+  --color-odyssey-muted: #8B7355;
+  --color-odyssey-accent: #2E6B6B;
+  --color-odyssey-gold: #B8860B;
+  --color-odyssey-coral: #A2472D;
+
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body: 'Crimson Pro', Georgia, serif;
+  --font-handwritten: 'Special Elite', cursive;
+}
+
+/* =============================================
+   GLOBAL
+   ============================================= */
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-body);
+  color: var(--color-ink);
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.6;
+  /* Parchment background with paper grain */
+  background:
+    radial-gradient(circle at 15% 8%, rgba(255,255,255,.42), transparent 24rem),
+    radial-gradient(circle at 88% 72%, rgba(46,107,107,.07), transparent 26rem),
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(139, 115, 85, 0.02) 2px,
+      rgba(139, 115, 85, 0.02) 4px
+    ),
+    linear-gradient(135deg, var(--color-parchment-light) 0%, var(--color-parchment) 50%, var(--color-parchment-dark) 100%);
+  background-attachment: fixed;
+}
+
+button, a, input { font: inherit; }
+a { color: inherit; }
+
+.map-surface {
+  position: relative;
+  isolation: isolate;
+  background:
+    linear-gradient(rgba(112, 66, 20, .045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(112, 66, 20, .045) 1px, transparent 1px),
+    linear-gradient(135deg, rgba(250,243,224,.8), rgba(232,213,163,.52));
+  background-size: 42px 42px, 42px 42px, auto;
+  border: 1px solid rgba(112, 66, 20, .22);
+  box-shadow: 0 18px 40px rgba(44,24,16,.08), inset 0 0 70px rgba(112,66,20,.08);
+}
+
+.map-surface::before,
+.map-surface::after {
+  content: '';
+  position: absolute;
+  pointer-events: none;
+  z-index: -1;
+}
+.map-surface::before {
+  inset: 10px;
+  border: 1px dashed rgba(112, 66, 20, .22);
+}
+.map-surface::after {
+  inset: 0;
+  background: radial-gradient(ellipse at center, transparent 45%, rgba(112,66,20,.11));
+}
+
+.map-card, .card {
+  background-color: var(--color-parchment-light);
+}
+
+.card {
+  position: relative;
+  border: 1px solid rgba(112,66,20,.2);
+  border-radius: 4px;
+  box-shadow: 2px 3px 12px rgba(44,24,16,.08);
+}
+
+.ribbon-label {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  padding: .35rem .75rem;
+  color: var(--color-parchment-light);
+  background: var(--color-ink);
+  font-family: var(--font-handwritten);
+  font-size: .62rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  box-shadow: 3px 3px 0 rgba(112,66,20,.18);
+}
+
+.voyage-header {
+  border-bottom: 1px solid rgba(244,232,193,.18);
+  background: linear-gradient(180deg, #3b241a 0%, #2c1810 100%);
+  color: var(--color-parchment-light);
+}
+.voyage-header::after {
+  content: '';
+  display: block;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--color-gold), transparent);
+  opacity: .55;
+}
+.voyage-header__mark { display: flex; color: var(--color-gold-light); transition: transform .25s ease, color .25s ease; }
+.group:hover .voyage-header__mark { color: var(--color-parchment-light); transform: rotate(14deg); }
+.voyage-header__sub { color: rgba(244,232,193,.48); font: 9px var(--font-handwritten); letter-spacing: .1em; text-transform: uppercase; margin-top: -2px; }
+.voyage-header__link { color: rgba(244,232,193,.64); font: 11px var(--font-handwritten); letter-spacing: .12em; text-transform: uppercase; text-decoration: none; transition: color .2s ease; }
+.voyage-header__link:hover { color: var(--color-parchment-light); }
+.voyage-header__stat { color: var(--color-gold-light); border: 1px solid rgba(218,165,32,.3); background: rgba(218,165,32,.1); }
+.voyage-header__stat--streak { color: #e98b5a; border-color: rgba(162,71,45,.4); background: rgba(162,71,45,.14); }
+.voyage-header__login { display: inline-flex; align-items: center; justify-content: center; gap: 6px; color: var(--color-ink); background: var(--color-gold-light); border: 1px solid var(--color-gold-light); font-family: var(--font-body); font-weight: 600; text-transform: uppercase; letter-spacing: .05em; }
+.voyage-header__login:hover { background: var(--color-parchment-light); border-color: var(--color-parchment-light); }
+.voyage-header .voyage-lang-switch { color: rgba(244,232,193,.7); border-color: rgba(244,232,193,.3); }
+.voyage-header .voyage-lang-switch:hover { color: var(--color-parchment-light); border-color: var(--color-gold-light); }
+
+/* =============================================
+   VOYAGE MAP — one continuous sheet, plotted by hand
+   ============================================= */
+.voyage-page {
+  background:
+    radial-gradient(circle at 50% -10%, rgba(255,247,218,.9), transparent 32rem),
+    linear-gradient(125deg, rgba(92,61,46,.06), transparent 32%, rgba(46,107,107,.06)),
+    var(--color-parchment-dark);
+}
+
+.voyage-hero {
+  min-height: 285px;
+  overflow: hidden;
+  background:
+    linear-gradient(135deg, rgba(255,249,234,.96), rgba(244,232,193,.86)),
+    var(--color-parchment-light);
+  border: 1px solid rgba(112,66,20,.26);
+  box-shadow: 0 12px 30px rgba(44,24,16,.1), inset 0 0 55px rgba(112,66,20,.08);
+}
+.voyage-hero::before {
+  content: '';
+  position: absolute;
+  inset: 12px;
+  border: 1px solid rgba(112,66,20,.18);
+  pointer-events: none;
+}
+.voyage-hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 40%, rgba(112,66,20,.14));
+}
+.voyage-hero__copy { position: relative; z-index: 1; max-width: 610px; }
+.voyage-hero__compass {
+  position: absolute;
+  z-index: 0;
+  right: 7%;
+  top: 50%;
+  transform: translateY(-50%) rotate(11deg);
+  opacity: .38;
+  color: var(--color-gold);
+}
+.voyage-hero__note {
+  position: absolute;
+  z-index: 1;
+  right: 7%;
+  bottom: 26px;
+  text-align: right;
+  color: var(--color-ink-muted);
+  transform: rotate(-4deg);
+}
+.voyage-title { letter-spacing: -.045em; }
+.voyage-title em { color: var(--color-ocean); font-weight: 500; }
+
+.map-surface {
+  overflow: hidden;
+  background:
+    linear-gradient(rgba(112, 66, 20, .035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(112, 66, 20, .035) 1px, transparent 1px),
+    linear-gradient(135deg, rgba(250,243,224,.98), rgba(232,213,163,.72));
+  background-size: 42px 42px, 42px 42px, auto;
+  box-shadow: 0 20px 42px rgba(44,24,16,.16), inset 0 0 90px rgba(112,66,20,.1);
+}
+.map-surface__header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0 0 1.1rem;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid rgba(112,66,20,.25);
+}
+.map-legend { gap: 1rem; color: var(--color-ink-muted); font: 10px var(--font-handwritten); text-transform: uppercase; letter-spacing: .08em; }
+.map-legend span { display: inline-flex; align-items: center; gap: .35rem; }
+.legend-dot { width: 7px; height: 7px; display: inline-block; border-radius: 50%; border: 1px solid currentColor; }
+.legend-dot--done { color: var(--color-stamp-green); background: var(--color-stamp-green); }
+.legend-dot--current { color: var(--color-ocean); background: var(--color-ocean); box-shadow: 0 0 0 3px rgba(46,107,107,.12); }
+.legend-dot--locked { color: var(--color-ink-faded); background: transparent; }
+
+.level-region { position: relative; }
+.level-heading { text-align: center; }
+.level-heading__rule { position: absolute; left: 0; right: 0; top: 50%; height: 1px; background: rgba(112,66,20,.22); }
+.level-heading__number { font: 10px var(--font-handwritten); letter-spacing: .08em; color: var(--color-stamp-red); border-right: 1px solid rgba(112,66,20,.22); padding-right: .7rem; }
+.module-region { position: relative; }
+.module-region__label { display: flex; align-items: center; gap: .6rem; justify-content: center; margin-bottom: .4rem; color: var(--color-ink-muted); font: 10px var(--font-handwritten); letter-spacing: .16em; text-transform: uppercase; }
+.module-region__line { width: 34px; height: 1px; background: rgba(112,66,20,.32); }
+
+.route-canvas {
+  position: relative;
+  min-height: 420px;
+  margin: 0 -1rem 1.2rem;
+  overflow: hidden;
+  background: radial-gradient(ellipse at 50% 50%, rgba(232,240,238,.28), transparent 68%);
+}
+.route-canvas::before {
+  content: '';
+  position: absolute;
+  inset: 24px 8%;
+  border: 1px dashed rgba(46,107,107,.13);
+  border-radius: 50%;
+  transform: rotate(-5deg);
+}
+.route-canvas__path { position: absolute; z-index: 1; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.route-canvas__path path { fill: none; stroke: var(--color-stamp-red); stroke-width: 3; stroke-dasharray: 10 11; stroke-linecap: round; opacity: .56; filter: drop-shadow(1px 1px 0 rgba(112,66,20,.1)); }
+.route-canvas__island, .route-canvas__compass { position: absolute; z-index: 0; pointer-events: none; opacity: .27; }
+.route-canvas__island--one { left: 4%; top: 20px; transform: rotate(-10deg); }
+.route-canvas__island--two { right: 4%; bottom: 25px; transform: rotate(7deg); }
+.route-canvas__compass { right: 45%; bottom: 35%; opacity: .14; transform: rotate(-14deg); }
+.route-grid { position: relative; z-index: 2; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, 190px); min-height: 380px; padding: 18px 2%; }
+.route-grid__item { display: flex; justify-content: center; align-items: center; min-width: 0; }
+
+.quest-stop { position: relative; min-height: 176px; display: flex; justify-content: center; width: 100%; }
+.quest-stop__button { position: relative; display: flex; flex-direction: column; align-items: center; width: min(190px, 100%); padding: 0; border: 0; background: transparent; color: var(--color-ink); cursor: pointer; }
+.quest-stop__button:disabled { cursor: not-allowed; }
+.quest-stop__landmark { position: absolute; z-index: 0; top: -14px; left: 50%; transform: translateX(-50%); opacity: .68; filter: sepia(.18) saturate(.8); transition: transform .25s ease, opacity .25s ease; }
+.quest-stop__button:hover .quest-stop__landmark { transform: translateX(-50%) translateY(-4px) scale(1.06); opacity: .9; }
+.quest-stop__pin-wrap { position: relative; z-index: 2; display: block; margin-top: 32px; width: 45px; height: 54px; }
+.quest-stop__pin { position: relative; z-index: 2; display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; margin: 0 auto; color: currentColor; background: var(--color-parchment-light); border: 2px solid currentColor; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); box-shadow: 2px 3px 0 rgba(44,24,16,.14); }
+.quest-stop__pin > * { transform: rotate(45deg); }
+.quest-stop__pin-shadow { position: absolute; bottom: 0; left: 50%; width: 34px; height: 7px; transform: translateX(-50%); background: rgba(44,24,16,.18); border-radius: 50%; filter: blur(2px); }
+.quest-stop__label { position: relative; z-index: 3; display: flex; flex-direction: column; gap: 3px; width: 172px; min-height: 64px; margin-top: -2px; padding: 7px 10px 8px; text-align: left; background: rgba(250,243,224,.94); border: 1px solid rgba(112,66,20,.28); box-shadow: 2px 3px 0 rgba(112,66,20,.12); transform: rotate(-1.5deg); transition: transform .25s ease, box-shadow .25s ease; }
+.quest-stop:nth-child(even) .quest-stop__label { transform: rotate(1.5deg); }
+.quest-stop__button:hover .quest-stop__label { transform: translateY(-3px) rotate(0); box-shadow: 3px 6px 9px rgba(44,24,16,.14); }
+.quest-stop__eyebrow { display: flex; align-items: center; justify-content: space-between; color: var(--color-stamp-red); font: 9px var(--font-handwritten); letter-spacing: .1em; text-transform: uppercase; }
+.quest-stop__status { color: var(--color-ink-muted); font-size: 8px; letter-spacing: .05em; }
+.quest-stop__title { display: block; font: italic 12px/1.2 var(--font-display); color: var(--color-ink); }
+.quest-stop__meta { display: inline-flex; align-items: center; gap: 3px; color: var(--color-gold); font: 9px var(--font-handwritten); }
+.quest-stop--locked .quest-stop__landmark, .quest-stop--locked .quest-stop__label { opacity: .4; filter: grayscale(.8); }
+.quest-stop--locked .quest-stop__pin { border-style: dashed; }
+.quest-stop--current .quest-stop__pin-wrap { animation: current-marker 2s ease-in-out infinite; }
+.quest-stop--current .quest-stop__pin { background: var(--color-ocean); color: var(--color-parchment-light); border-color: var(--color-ocean); box-shadow: 2px 3px 0 rgba(44,24,16,.16), 0 0 0 6px rgba(46,107,107,.1); }
+.quest-stop--special .quest-stop__pin { width: 48px; height: 48px; border-width: 2px; }
+.stop-number-line { display: none; }
+@keyframes current-marker { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+
+.module-divider, .region-divider { display: flex; align-items: center; justify-content: center; gap: 1rem; color: var(--color-gold); }
+.module-divider { margin: 0 0 2rem; opacity: .7; }
+.module-divider::before, .module-divider::after, .region-divider__line { content: ''; display: block; width: 82px; height: 1px; background: rgba(112,66,20,.24); }
+.region-divider { gap: 1.5rem; margin: 1rem 0 3.5rem; }
+.region-divider__art { display: flex; align-items: center; gap: 1rem; height: 82px; opacity: .55; }
+.map-endmark { display: flex; flex-direction: column; align-items: center; gap: .2rem; padding: 2rem 0 .7rem; color: var(--color-ink-muted); }
+.map-endmark__x { color: var(--color-stamp-red); font: 500 58px/38px var(--font-display); transform: rotate(-9deg); }
+
+@media (max-width: 640px) {
+  .voyage-hero { margin-left: .75rem; margin-right: .75rem; min-height: 310px; }
+  .voyage-hero__compass { right: -30px; top: 35%; opacity: .24; }
+  .voyage-hero__copy { max-width: 78%; }
+  .map-surface__header { align-items: flex-start; flex-direction: column; margin-bottom: 1.5rem; }
+  .route-canvas { min-height: 0; margin: 0 -.25rem 1rem; }
+  .route-canvas::before, .route-canvas__island, .route-canvas__compass { display: none; }
+  .route-canvas__path { opacity: .65; }
+  .route-grid { grid-template-columns: 1fr; grid-template-rows: none; min-height: 0; gap: 1rem; padding: 1.5rem 0 1.5rem; }
+  .route-grid__item { grid-column: 1 !important; grid-row: auto !important; }
+  .quest-stop { min-height: 145px; }
+  .quest-stop__landmark { top: -4px; }
+  .quest-stop__pin-wrap { margin-top: 29px; }
+  .module-divider::before, .module-divider::after, .region-divider__line { width: 42px; }
+  .region-divider { margin-bottom: 2.5rem; }
+}
+
+/* Paper grain overlay */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.08;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  mix-blend-mode: multiply;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  line-height: 1.2;
+  color: var(--color-ink);
+}
+
+::selection {
+  background: var(--color-gold);
+  color: var(--color-parchment);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-ocean);
+  outline-offset: 2px;
+}
+
+/* =============================================
+   TYPOGRAPHY
+   ============================================= */
+.font-display { font-family: var(--font-display); }
+.font-body { font-family: var(--font-body); }
+.font-handwritten { font-family: var(--font-handwritten); }
+
+/* =============================================
+   CARDS — like paper pinned to a map
+   ============================================= */
+.map-card {
+  background: var(--color-parchment-light);
+  border: 1px solid var(--color-ink-faded);
+  border-radius: 3px;
+  box-shadow:
+    2px 2px 0 rgba(44, 24, 16, 0.08),
+    4px 4px 12px rgba(44, 24, 16, 0.06);
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.map-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, rgba(139, 115, 85, 0.15), transparent);
+}
+
+.map-card:hover {
+  box-shadow:
+    2px 2px 0 rgba(44, 24, 16, 0.12),
+    6px 6px 20px rgba(44, 24, 16, 0.08);
+  transform: translateY(-1px);
+}
+
+/* =============================================
+   BUTTONS — worn, adventure-style
+   ============================================= */
+.btn-adventure {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--color-ocean);
+  color: var(--color-parchment);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 14px;
+  padding: 10px 24px;
+  border-radius: 4px;
+  border: 2px solid var(--color-ocean);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  font-size: 12px;
+}
+
+.btn-adventure:hover {
+  background: var(--color-ocean-light);
+  border-color: var(--color-ocean-light);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(46, 107, 107, 0.3);
+}
+
+.btn-parchment {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--color-parchment-light);
+  color: var(--color-ink-light);
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 14px;
+  padding: 10px 24px;
+  border-radius: 4px;
+  border: 1.5px solid var(--color-ink-faded);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-parchment:hover {
+  background: var(--color-parchment-dark);
+  border-color: var(--color-ink-muted);
+}
+
+/* =============================================
+   INPUT — aged paper field
+   ============================================= */
+.input-field {
+  width: 100%;
+  padding: 10px 14px;
+  background: var(--color-parchment-light);
+  border: 1.5px solid var(--color-ink-faded);
+  border-radius: 3px;
+  font-family: var(--font-body);
+  font-size: 15px;
+  color: var(--color-ink);
+  transition: all 0.15s ease;
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: var(--color-ocean);
+  box-shadow: 0 0 0 2px rgba(46, 107, 107, 0.15);
+}
+
+.input-field::placeholder {
+  color: var(--color-ink-faded);
+}
+
+/* =============================================
+   BADGES — stamped look
+   ============================================= */
+.stamp {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border: 2px solid currentColor;
+  border-radius: 2px;
+  font-family: var(--font-handwritten);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  transform: rotate(-1deg);
+}
+
+.stamp-ocean { color: var(--color-ocean); }
+.stamp-red { color: var(--color-stamp-red); }
+.stamp-green { color: var(--color-stamp-green); }
+.stamp-gold { color: var(--color-gold); }
+
+/* =============================================
+   PROGRESS BAR — ink trail
+   ============================================= */
+.trail-track {
+  background: var(--color-ink-faded);
+  border-radius: 999px;
+  overflow: hidden;
+  height: 6px;
+  opacity: 0.3;
+}
+
+.trail-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  background: var(--color-ocean);
+}
+
+/* =============================================
+   DOTTED PATH — adventure trail
+   ============================================= */
+.dotted-path {
+  stroke: var(--color-ink-muted);
+  stroke-width: 2;
+  stroke-dasharray: 6 4;
+  fill: none;
+}
+
+.dotted-path-active {
+  stroke: var(--color-ocean);
+  stroke-width: 2.5;
+  stroke-dasharray: 6 4;
+  fill: none;
+}
+
+/* =============================================
+   MAP PIN
+   ============================================= */
+.map-pin {
+  width: 16px;
+  height: 16px;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* =============================================
+   ANIMATIONS
+   ============================================= */
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes compass-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pin-drop {
+  0% { transform: translateY(-20px) scale(0.8); opacity: 0; }
+  60% { transform: translateY(2px) scale(1.05); }
+  100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+@keyframes pulse-ring {
+  0% { box-shadow: 0 0 0 0 rgba(46, 107, 107, 0.3); }
+  100% { box-shadow: 0 0 0 8px rgba(46, 107, 107, 0); }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.5s ease both;
+}
+
+.animate-pin-drop {
+  animation: pin-drop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* =============================================
+   SCROLLBAR
+   ============================================= */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--color-parchment-dark); }
+::-webkit-scrollbar-thumb {
+  background: var(--color-ink-faded);
+  border-radius: 4px;
+  border: 2px solid var(--color-parchment-dark);
+}
+
+/* =============================================
+   QUEST STATES
+   ============================================= */
+.quest-locked {
+  opacity: 0.45;
+  filter: grayscale(0.3);
+}
+
+.quest-locked:hover {
+  opacity: 0.6;
+}
+
+.quest-available {
+  border-color: var(--color-gold);
+  border-width: 2px;
+}
+
+.quest-active {
+  border-color: var(--color-ocean);
+  border-width: 2px;
+  animation: pulse-ring 2s ease infinite;
+}
+
+.quest-done {
+  border-color: var(--color-stamp-green);
+  opacity: 0.85;
+}
+
+/* =============================================
+   COMPASS ROSE — decorative
+   ============================================= */
+.compass-rose {
+  width: 60px;
+  height: 60px;
+  opacity: 0.15;
+  position: absolute;
+  pointer-events: none;
+}
+
+/* =============================================
+   CORNER FOLD — paper effect
+   ============================================= */
+.corner-fold {
+  position: relative;
+  overflow: hidden;
+}
+
+.corner-fold::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 20px;
+  height: 20px;
+  background: linear-gradient(225deg, var(--color-parchment-dark) 50%, transparent 50%);
+  border-left: 1px solid var(--color-ink-faded);
+  border-bottom: 1px solid var(--color-ink-faded);
+}
